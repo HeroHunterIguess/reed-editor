@@ -25,6 +25,9 @@ context_font = pygame.font.SysFont(c.font, c.context_info_size)
 # Create new buffer for everything in the file
 buffer = [list(line) for line in utils.read_file(filepath).splitlines()]
 
+if not buffer:
+    buffer = [[]]
+
 # Keep track of if buffer has changed since last save
 changed = False
 
@@ -80,24 +83,24 @@ while running:
 
                 utils.make_cursor_pos_valid(buffer, cursor_location)
 
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 cursor_location[1] += 1
 
                 utils.make_cursor_pos_valid(buffer, cursor_location)
             
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN:
                 cursor_location[0] += 1
 
                 utils.make_cursor_pos_valid(buffer, cursor_location)
             
-            if event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP:
                 cursor_location[0] -= 1
                 
                 utils.make_cursor_pos_valid(buffer, cursor_location)
 
 
             # Allow backspace to delete characters
-            if event.key == pygame.K_BACKSPACE:
+            elif event.key == pygame.K_BACKSPACE:
                 # If in standard usage delete previous character
                 if cursor_location[1] > 0:
                     buffer[cursor_location[0]].pop(cursor_location[1] - 1)
@@ -125,7 +128,7 @@ while running:
                 changed = True
             
             # Allow enter to add new line
-            if event.key == pygame.K_RETURN:
+            elif event.key == pygame.K_RETURN:
                 # Try-except incase the line is empty
                 try:
                     len(buffer[cursor_location[0]])
@@ -150,11 +153,18 @@ while running:
 
             
             # Save file when control + s is clicked
-            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+            elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.write_buffer(buffer, filepath)
 
                 # Update unsaved alert to be gone
                 changed = False
+            
+            # Insert character
+            elif event.unicode:
+                buffer[cursor_location[0]].insert(cursor_location[1], event.unicode)
+                cursor_location[1] += 1
+
+                changed = True
 
     # Update screen
     pygame.display.flip()
