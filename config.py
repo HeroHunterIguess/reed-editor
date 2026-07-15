@@ -1,4 +1,5 @@
 # Default Reed configuration
+# If any variables from this file are deleted, the program will not run
 
 background_color = [39,40,43]
 window_size = (700, 450)
