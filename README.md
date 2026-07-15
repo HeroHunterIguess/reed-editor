@@ -1,6 +1,7 @@
 # Reed
 
 ![image](https://github.com/HeroHunterIguess/reed-editor/blob/main/images/example_image.png)
+
 Example ^
 
 This is early in development, and not very useful right now but I plan to turn this into a finished simple text editor.
