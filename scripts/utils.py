@@ -4,8 +4,14 @@ import pygame
 
 # Reads the data from the specified file
 def read_file(filename):
-    with open(filename, "r") as txt_file:
-        return txt_file.read()
+    try:
+        with open(filename, "r") as txt_file:
+            return txt_file.read()
+    except FileNotFoundError:
+        # If the file doesnt exst: create it
+        txt_file = open(filename, "x")
+        txt_file.close()
+        return ""
 
 # Checks if the cursor is in a valid position in the buffer and if not fixes it
 def make_cursor_pos_valid(buffer, cursor_location):
