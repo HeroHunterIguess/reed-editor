@@ -4,8 +4,15 @@
 import sys, os, pygame, pygame.locals, utils, config as c
 pygame.init()
 pygame.font.init()
+clock = pygame.time.Clock()
 
 cursor_location = [0, 0]
+last_y = 0
+
+# Holding repeats
+held_key = None
+hold_time = 0
+waiting_for_initial = False
 
 # Default path if none is passed
 # This will likely be changed later
@@ -15,12 +22,16 @@ filepath = "/home/herohunter/reed_default.txt"
 if len(sys.argv) > 1:
     filepath = sys.argv[1]
 
+##########################
+
 # Intial window steup
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
 
 font = pygame.font.SysFont(c.font, c.font_size)
 context_font = pygame.font.SysFont(c.font, c.context_info_size)
+
+char_width = font.size(" ")[0]
 
 # Create new buffer for everything in the file
 buffer = [list(line) for line in utils.read_file(filepath).splitlines()]
@@ -31,11 +42,17 @@ if not buffer:
 # Keep track of if buffer has changed since last save
 changed = False
 
+##########################
 
 # Begin update/processing loop
 running = True
 
 while running:
+
+    # Limit fps
+    dt = clock.tick(60)
+
+    # Set background
     screen.fill(c.background_color)
 
     # Start text at the top of the screen (+ padding)
@@ -53,9 +70,10 @@ while running:
 
         y += c.line_height
 
+    ##########################
 
-    # Display cursor @ location * 9 (9 is character width), with a set width of 2, and height being the line height 
-    pygame.draw.rect(screen, c.cursor_color, (cursor_location[1] * 9 - 1 + c.padding_left, cursor_location[0] * c.line_height + 4, 2, c.font_size))
+    # Display cursor @ location * char_width, with a set width of 2, and height being the line height 
+    pygame.draw.rect(screen, c.cursor_color, (cursor_location[1] * char_width - 1 + c.padding_left, cursor_location[0] * c.line_height + 4, 2, c.font_size))
 
     # Display context menu at the bottom
     pygame.draw.rect(screen, c.context_background_color, (0, c.window_size[1] - c.line_height - c.context_background_padding_bottom, c.window_size[0], c.line_height + c.context_background_padding_bottom))
@@ -68,40 +86,44 @@ while running:
     if changed:
         pygame.draw.circle(screen, c.unsaved_alert_color, (c.window_size[0] - c.unsaved_alert_corner_padding, c.window_size[1] - c.unsaved_alert_corner_padding), c.unsaved_alert_size)
 
+    ##########################
+
+    keys = pygame.key.get_pressed()
 
     # Handle all inputs
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             running = False
         
+        # Clear held key
+        if event.type == pygame.KEYUP:
+            if event.key == held_key:
+                held_key = None
+
         # Keybinds
         if event.type == pygame.KEYDOWN:
 
-            # Navigate cursor with arrow keys
-            if event.key == pygame.K_LEFT:
-                cursor_location[1] -= 1
+            if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                step = c.large_step
+            else: 
+                step = 1
 
-                utils.make_cursor_pos_valid(buffer, cursor_location)
-
-            elif event.key == pygame.K_RIGHT:
-                cursor_location[1] += 1
-
-                utils.make_cursor_pos_valid(buffer, cursor_location)
             
-            elif event.key == pygame.K_DOWN:
-                cursor_location[0] += 1
+            # Keep track of held arrow keys
+            if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN):
+                held_key = event.key
+                hold_time = 0
+                waiting_for_initial = True
 
-                utils.make_cursor_pos_valid(buffer, cursor_location)
-            
-            elif event.key == pygame.K_UP:
-                cursor_location[0] -= 1
-                
-                utils.make_cursor_pos_valid(buffer, cursor_location)
+                # Initial move
+                cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
 
+            ##########################
 
             # Allow backspace to delete characters
-            elif event.key == pygame.K_BACKSPACE:
-                # If in standard usage delete previous character
+            if event.key == pygame.K_BACKSPACE:
+                # Delete previous character in standard usage
                 if cursor_location[1] > 0:
                     buffer[cursor_location[0]].pop(cursor_location[1] - 1)
                     cursor_location[1] -= 1
@@ -127,6 +149,14 @@ while running:
                 
                 changed = True
             
+            # Allow delete key to function properly
+            elif event.key == pygame.K_DELETE:
+                # Delete next character
+                try:
+                    buffer[cursor_location[0]].pop(cursor_location[1])
+                except IndexError:
+                    pass
+
             # Allow enter to add new line
             elif event.key == pygame.K_RETURN:
                 # Try-except incase the line is empty
@@ -151,6 +181,7 @@ while running:
 
                 changed = True
 
+            ##########################
             
             # Save file when control + s is clicked
             elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
@@ -165,6 +196,22 @@ while running:
                 cursor_location[1] += 1
 
                 changed = True
+
+    ##########################
+
+    if held_key is not None:
+
+        hold_time += dt
+        
+        if waiting_for_initial and hold_time >= c.initial_delay:
+            cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
+            waiting_for_initial = False
+            hold_time = 0
+        elif not waiting_for_initial and hold_time >= c.repeat_time:
+            cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
+            hold_time = 0
+
+    ##########################
 
     # Update screen
     pygame.display.flip()
