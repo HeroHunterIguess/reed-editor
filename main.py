@@ -1,117 +1,163 @@
-# Reed, a minimalistic, customizable text editor
+### Reed, a minimalistic, customizable text editor ###
 
-import sys, os, pygame, config as c
+# Initial set up 
+import sys, os, pygame, pygame.locals, utils, config as c
 pygame.init()
-
-# initial setup
-static_file_data = ""
+pygame.font.init()
 
 cursor_location = [0, 0]
 
-filepath = "/home/herohunter/reed_default.txt" # default path
+# Default path if none is passed
+# This will likely be changed later
+filepath = "/home/herohunter/reed_default.txt" 
 
-# check if a filepath was passed as an argument to the script
+# Check if a filepath was passed to the script
 if len(sys.argv) > 1:
     filepath = sys.argv[1]
 
-# intial window steup
+# Intial window steup
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
 
-pygame.font.init()
 font = pygame.font.SysFont(c.font, c.font_size)
 context_font = pygame.font.SysFont(c.font, c.context_info_size)
 
+# Create new buffer for everything in the file
+buffer = [list(line) for line in utils.read_file(filepath).splitlines()]
+
+# Keep track of if buffer has changed since last save
+changed = False
+
+
+# Begin update/processing loop
 running = True
 
-def read_file(filename):
-    with open(filename, "r") as txt_file:
-        return txt_file.read()
-
-if filepath:
-    static_file_data = read_file(filepath)
-
-buffer = [list(line) for line in static_file_data.splitlines()]
-if not buffer:
-    buffer = [[]]
-
-# check if the cursor is in a valid position and if not then fix it
-def make_cursor_pos_valid(buffer, cursor_location):
-    if cursor_location[1] > len(buffer[cursor_location[0]]):
-        cursor_location[1] = current_line_length
-    
-    if cursor_location[1] < 0:
-        cursor_location[1] = 0
-    
-    if cursor_location[0] < 0:
-        cursor_location[0] = 0
-    
-    if cursor_location[0]
-
-# begin update loop
 while running:
-    pygame.time.delay(60)
-
     screen.fill(c.background_color)
 
-    # start text y at 0
-    y = 0
+    # Start text at the top of the screen (+ padding)
+    y = c.padding_top
 
-    # render text
+    # Render main text
     for line_chars in buffer:
 
+        # Join into full lines
         line = "".join(line_chars)
 
+        # Display it
         text_surface = font.render(line, True, c.text_color)
-        screen.blit(text_surface, (0,y))
+        screen.blit(text_surface, (c.padding_left,y))
 
         y += c.line_height
 
-    # display cursor
-    pygame.draw.rect(screen, c.cursor_color, (cursor_location[1] * 9 - 1, cursor_location[0] * c.line_height + 4, 2, c.font_size))
 
-    # display context menu
+    # Display cursor @ location * 9 (9 is character width), with a set width of 2, and height being the line height 
+    pygame.draw.rect(screen, c.cursor_color, (cursor_location[1] * 9 - 1 + c.padding_left, cursor_location[0] * c.line_height + 4, 2, c.font_size))
+
+    # Display context menu at the bottom
     pygame.draw.rect(screen, c.context_background_color, (0, c.window_size[1] - c.line_height - c.context_background_padding_bottom, c.window_size[0], c.line_height + c.context_background_padding_bottom))
 
+    # Draw the text for the menu
     context_text = context_font.render(filepath, True, c.context_info_color)
     screen.blit(context_text, (0, c.window_size[1] - c.line_height - c.context_info_padding_bottom))
 
-    # allow window to close
+    # Draw the alert on the context menu if the file has unsaved changes
+    if changed:
+        pygame.draw.circle(screen, c.unsaved_alert_color, (c.window_size[0] - c.unsaved_alert_corner_padding, c.window_size[1] - c.unsaved_alert_corner_padding), c.unsaved_alert_size)
+
+
+    # Handle all inputs
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         
-        # keybinds
+        # Keybinds
         if event.type == pygame.KEYDOWN:
 
-            # navigate cursor with arrows
+            # Navigate cursor with arrow keys
             if event.key == pygame.K_LEFT:
                 cursor_location[1] -= 1
 
-                make_cursor_pos_valid(buffer, cursor_location)
+                utils.make_cursor_pos_valid(buffer, cursor_location)
 
             if event.key == pygame.K_RIGHT:
                 cursor_location[1] += 1
 
-                make_cursor_pos_valid(buffer, cursor_location)
+                utils.make_cursor_pos_valid(buffer, cursor_location)
             
             if event.key == pygame.K_DOWN:
                 cursor_location[0] += 1
 
-                make_cursor_pos_valid(buffer, cursor_location)
+                utils.make_cursor_pos_valid(buffer, cursor_location)
             
             if event.key == pygame.K_UP:
                 cursor_location[0] -= 1
                 
-                make_cursor_pos_valid(buffer, cursor_location)
+                utils.make_cursor_pos_valid(buffer, cursor_location)
 
-            # backspace
+
+            # Allow backspace to delete characters
             if event.key == pygame.K_BACKSPACE:
+                # If in standard usage delete previous character
                 if cursor_location[1] > 0:
                     buffer[cursor_location[0]].pop(cursor_location[1] - 1)
                     cursor_location[1] -= 1
+                
+                # If line is empty then remove the \n before
+                elif cursor_location[0] > 0:
+                    previous_line_len = len(buffer[cursor_location[0] - 1])
+                    
+                    # Try-except to prevent index overflow with empty line
+                    try:
+                        len(buffer[cursor_location[0]])
+                        # Move current lines characters to the line above
+                        buffer[cursor_location[0] - 1].extend(buffer[cursor_location[0]])
+                    
+                        # Remove current line
+                        buffer.pop(cursor_location[0])
+                    except IndexError:
+                        pass
 
-    # update screen
+                    # Fix cursor location
+                    cursor_location[0] -= 1
+                    cursor_location[1] = previous_line_len
+                
+                changed = True
+            
+            # Allow enter to add new line
+            if event.key == pygame.K_RETURN:
+                # Try-except incase the line is empty
+                try:
+                    len(buffer[cursor_location[0]])
+
+                    # Split line into parts to seperate them
+                    current_line = buffer[cursor_location[0]]
+                    left = current_line[:cursor_location[1]]
+                    right = current_line[cursor_location[1]:]
+
+                    # Split the two onto different lines
+                    buffer[cursor_location[0]] = left
+                    buffer.insert(cursor_location[0] + 1, right)
+                except IndexError:
+                    # If the line is empty then create new empty line
+                    buffer.append([])
+
+                # Fix cursor location
+                cursor_location[0] += 1
+                cursor_location[1] = 0
+
+                changed = True
+
+            
+            # Save file when control + s is clicked
+            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                utils.write_buffer(buffer, filepath)
+
+                # Update unsaved alert to be gone
+                changed = False
+
+    # Update screen
     pygame.display.flip()
 
+# Close
 pygame.quit()
