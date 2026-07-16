@@ -1,6 +1,6 @@
 ### Util functions ###
 
-import pygame
+import pygame, editing, config as c
 
 # Reads the data from the specified file
 def read_file(filename):
@@ -45,20 +45,36 @@ def write_buffer(buffer, filename):
         # Write data
         txt_file.write(data)
 
-# Take in lots of info from main.py and process movement
-def move_cursor(key, cursor_location, step, buffer, last_y):
+# Take in lots of info from main.py and process inputs
+def take_inputs(key, cursor_location, buffer, last_y):
+
+    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+        step = c.large_step
+    else: 
+        step = 1
+
     # Navigate cursor with arrow keys
     if key == pygame.K_LEFT:
-        cursor_location[1] -= step
+        # Check if its moving lines or moving on one line
+        if cursor_location[1] == 0 and cursor_location[0] != 0:
+            cursor_location[0] -= 1
+            cursor_location[1] = len(buffer[cursor_location[0]])
+        else:
+            cursor_location[1] -= step
 
-        last_y = cursor_location[1]
-        make_cursor_pos_valid(buffer, cursor_location)
+            last_y = cursor_location[1]
+            make_cursor_pos_valid(buffer, cursor_location)
 
     elif key == pygame.K_RIGHT:
-        cursor_location[1] += step
+        # Check if its moving lines or moving on one line
+        if cursor_location[1] == len(buffer[cursor_location[0]]) and cursor_location[0] < len(buffer) - 1:
+            cursor_location[0] += 1
+            cursor_location[1] = 0
+        else: 
+            cursor_location[1] += step
 
-        last_y = cursor_location[1]
-        make_cursor_pos_valid(buffer, cursor_location)
+            last_y = cursor_location[1]
+            make_cursor_pos_valid(buffer, cursor_location)
     
     elif key == pygame.K_DOWN:
         cursor_location[0] += step
