@@ -1,0 +1,56 @@
+### Editng functions ###
+
+# handle hitting enter for a new line
+def new_line(buffer, cursor_location):
+    # Try-except incase the line is empty
+    try:
+        len(buffer[cursor_location[0]])
+
+        # Split line into parts to seperate them
+        current_line = buffer[cursor_location[0]]
+        left = current_line[:cursor_location[1]]
+        right = current_line[cursor_location[1]:]
+
+        # Split the two onto different lines
+        buffer[cursor_location[0]] = left
+        buffer.insert(cursor_location[0] + 1, right)
+    except IndexError:
+        # If the line is empty then create new empty line
+        buffer.append([])
+
+    # Fix cursor location
+    cursor_location[0] += 1
+    cursor_location[1] = 0
+
+# handle backspacing
+def backspace(buffer, cursor_location):
+    # Delete previous character in standard usage
+    if cursor_location[1] > 0:
+        buffer[cursor_location[0]].pop(cursor_location[1] - 1)
+        cursor_location[1] -= 1
+    
+    # If line is empty then remove the \n before
+    elif cursor_location[0] > 0:
+        previous_line_len = len(buffer[cursor_location[0] - 1])
+        
+        # Try-except to prevent index overflow with empty line
+        try:
+            len(buffer[cursor_location[0]])
+            # Move current lines characters to the line above
+            buffer[cursor_location[0] - 1].extend(buffer[cursor_location[0]])
+        
+            # Remove current line
+            buffer.pop(cursor_location[0])
+        except IndexError:
+            pass
+
+        # Fix cursor location
+        cursor_location[0] -= 1
+        cursor_location[1] = previous_line_len
+
+# handle hitting delete key
+def delete(buffer, cursor_location):
+    try:
+        buffer[cursor_location[0]].pop(cursor_location[1])
+    except IndexError:
+        pass
