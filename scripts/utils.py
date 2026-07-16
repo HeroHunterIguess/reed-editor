@@ -1,6 +1,6 @@
 ### Util functions ###
 
-import pygame, editing, config as c, rendering as r
+import pygame, pyperclip, editing, config as c, rendering as r
 
 char_width = 0
 
@@ -51,6 +51,19 @@ def write_buffer(buffer, filename):
         
         # Write data
         txt_file.write(data)
+
+# Copy all text in the buffer
+def copy_all(buffer):
+    lines = []
+    # Turn buffer into standard text
+    for line_chars in buffer:
+        line = "".join(line_chars)
+
+        lines.append(line)
+
+    text = "\n".join(lines)
+
+    pyperclip.copy(text)
 
 # Take in lots of info from main.py and process inputs
 def take_inputs(event, cursor_location, buffer, last_y, changed):
