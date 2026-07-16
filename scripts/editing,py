@@ -1,6 +1,6 @@
 ### Editng functions ###
 
-# handle hitting enter for a new line
+# Handle hitting enter for a new line
 def new_line(buffer, cursor_location):
     # Try-except incase the line is empty
     try:
@@ -59,7 +59,7 @@ def backspace(buffer, cursor_location, holding_ctrl):
             cursor_location[1] -= 1
         
         # If line is empty then remove the \n before
-        elif cursor_location[0] > 0 and len(buffer[cursor_location[0]]) == 0:
+        elif cursor_location[0] > 0:
             previous_line_len = len(buffer[cursor_location[0] - 1])
             
             # Try-except to prevent index overflow with empty line
@@ -79,10 +79,12 @@ def backspace(buffer, cursor_location, holding_ctrl):
     
     return buffer, cursor_location
 
-# handle hitting delete key
+# Handle hitting delete key 
+# Currently cannot delete on end of line to merge with next 
 def delete(buffer, cursor_location, holding_ctrl):
     line = buffer[cursor_location[0]]
 
+    # If holding control delete whole word
     if holding_ctrl:
         moves = 0
 
@@ -101,6 +103,7 @@ def delete(buffer, cursor_location, holding_ctrl):
             del line[cursor_location[1]:cursor_location[1] + moves]
 
     else:
+        # Standard single character delete
         if cursor_location[1] < len(line):
             buffer[cursor_location[0]].pop(cursor_location[1])
 
