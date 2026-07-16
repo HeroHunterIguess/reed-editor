@@ -8,7 +8,6 @@ pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
 
-# Intial window steup
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
 
@@ -22,7 +21,10 @@ waiting_for_initial = False
 
 # Default path if none is passed
 # This will likely be changed later
-filepath = "/home/herohunter/reed_default.txt" 
+if os.name == "posix":
+    filepath = "/home/herohunter/reed_default.txt" 
+elif os.name == "nt":
+    filepath = os.path.join(os.path.expanduser("~"), "reed_default.txt")# Windows path hasnt been tested
 
 # Check if a filepath was passed to the script
 if len(sys.argv) > 1:
@@ -41,6 +43,9 @@ changed = False
 
 ##########################
 
+# Initialize char_width into utils.py
+utils.initialize(rendering.char_width)
+
 # Begin update/processing loop
 running = True
 
@@ -56,7 +61,7 @@ while running:
 
     keys = pygame.key.get_pressed()
 
-    # Handle all inputs
+    # Handle main inputs
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -73,9 +78,10 @@ while running:
             # Save file when control + s is clicked
             if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.write_buffer(buffer, filepath)
-
+ 
                 # Update unsaved alert to be gone
                 changed = False
+            # All initial inputs
             else:
                 hold_time = 0
                 held_event = event
@@ -86,14 +92,17 @@ while running:
             
     ##########################
 
+    # Repeat inputs if they are held
     if held_event is not None:
 
         hold_time += dt
         
+        # First input after intial_delay
         if waiting_for_initial and hold_time >= c.initial_delay:
             buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
             waiting_for_initial = False
             hold_time = 0
+        # Repeating at a delay of repeat_time 
         elif not waiting_for_initial and hold_time >= c.repeat_time:
             buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
             hold_time = 0
