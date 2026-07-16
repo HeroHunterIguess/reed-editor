@@ -81,6 +81,11 @@ while running:
  
                 # Update unsaved alert to be gone
                 changed = False
+            
+            # Allow ctrl+c to copy entire file 
+            elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                utils.copy_all(buffer)
+            
             # All initial inputs
             else:
                 hold_time = 0
