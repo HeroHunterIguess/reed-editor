@@ -3,7 +3,7 @@
 ### Main logic ###
 
 # Initial set up 
-import sys, os, pygame, pygame.locals, utils, rendering, editing, config as c
+import sys, os, pygame, pygame.locals, utils, rendering, config as c
 pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
@@ -16,7 +16,7 @@ cursor_location = [0, 0]
 last_y = 0
 
 # Holding repeats
-held_key = None
+held_event = None
 hold_time = 0
 waiting_for_initial = False
 
@@ -64,64 +64,38 @@ while running:
         
         # Clear held key
         if event.type == pygame.KEYUP:
-            if event.key == held_key:
-                held_key = None
+            if held_event is not None and event.key == held_event.key:
+                held_event = None
 
         # Keybinds
         if event.type == pygame.KEYDOWN:
-            
-            # Keep track of held arrow keys
-            if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN):
-                held_key = event.key
-                hold_time = 0
-                waiting_for_initial = True
 
-                # Initial move
-                cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
-
-            ##########################
-
-            # Allow backspace to delete characters
-            if event.key == pygame.K_BACKSPACE:
-                editing.backspace(buffer, cursor_location)
-                
-                changed = True
-            
-            # Allow delete key to function properly
-            elif event.key == pygame.K_DELETE:
-                # Delete next character
-                editing.delete(buffer, cursor_location)
-
-            # Allow enter to add new line
-            elif event.key == pygame.K_RETURN:
-                editing.new_line(buffer, cursor_location)
-                changed = True
-            
             # Save file when control + s is clicked
-            elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.write_buffer(buffer, filepath)
 
                 # Update unsaved alert to be gone
                 changed = False
+            else:
+                hold_time = 0
+                held_event = event
+                waiting_for_initial = True
+
+                # Initial move
+                buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
             
-            # Insert character
-            elif event.unicode:
-                editing.insert_character(buffer, cursor_location, event)
-
-                changed = True
-
     ##########################
 
-    if held_key is not None:
+    if held_event is not None:
 
         hold_time += dt
         
         if waiting_for_initial and hold_time >= c.initial_delay:
-            cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
+            buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
             waiting_for_initial = False
             hold_time = 0
         elif not waiting_for_initial and hold_time >= c.repeat_time:
-            cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
+            buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
             hold_time = 0
 
     ##########################
