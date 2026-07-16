@@ -54,3 +54,8 @@ def delete(buffer, cursor_location):
         buffer[cursor_location[0]].pop(cursor_location[1])
     except IndexError:
         pass
+
+# insert given unicode character
+def insert_character(buffer, cursor_location, event):
+    buffer[cursor_location[0]].insert(cursor_location[1], event.unicode)
+    cursor_location[1] += 1
