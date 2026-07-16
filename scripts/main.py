@@ -106,8 +106,7 @@ while running:
             
             # Insert character
             elif event.unicode:
-                buffer[cursor_location[0]].insert(cursor_location[1], event.unicode)
-                cursor_location[1] += 1
+                editing.insert_character(buffer, cursor_location, event)
 
                 changed = True
 
