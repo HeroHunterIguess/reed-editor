@@ -1,7 +1,9 @@
 ### Reed, a minimalistic, customizable text editor ###
 
+### Main logic ###
+
 # Initial set up 
-import sys, os, pygame, pygame.locals, utils, rendering, config as c
+import sys, os, pygame, pygame.locals, utils, rendering, editing, config as c
 pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
@@ -67,12 +69,6 @@ while running:
 
         # Keybinds
         if event.type == pygame.KEYDOWN:
-
-            if pygame.key.get_mods() & pygame.KMOD_CTRL:
-                step = c.large_step
-            else: 
-                step = 1
-
             
             # Keep track of held arrow keys
             if event.key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN):
@@ -81,71 +77,25 @@ while running:
                 waiting_for_initial = True
 
                 # Initial move
-                cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
+                cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
 
             ##########################
 
             # Allow backspace to delete characters
             if event.key == pygame.K_BACKSPACE:
-                # Delete previous character in standard usage
-                if cursor_location[1] > 0:
-                    buffer[cursor_location[0]].pop(cursor_location[1] - 1)
-                    cursor_location[1] -= 1
-                
-                # If line is empty then remove the \n before
-                elif cursor_location[0] > 0:
-                    previous_line_len = len(buffer[cursor_location[0] - 1])
-                    
-                    # Try-except to prevent index overflow with empty line
-                    try:
-                        len(buffer[cursor_location[0]])
-                        # Move current lines characters to the line above
-                        buffer[cursor_location[0] - 1].extend(buffer[cursor_location[0]])
-                    
-                        # Remove current line
-                        buffer.pop(cursor_location[0])
-                    except IndexError:
-                        pass
-
-                    # Fix cursor location
-                    cursor_location[0] -= 1
-                    cursor_location[1] = previous_line_len
+                editing.backspace(buffer, cursor_location)
                 
                 changed = True
             
             # Allow delete key to function properly
             elif event.key == pygame.K_DELETE:
                 # Delete next character
-                try:
-                    buffer[cursor_location[0]].pop(cursor_location[1])
-                except IndexError:
-                    pass
+                editing.delete(buffer, cursor_location)
 
             # Allow enter to add new line
             elif event.key == pygame.K_RETURN:
-                # Try-except incase the line is empty
-                try:
-                    len(buffer[cursor_location[0]])
-
-                    # Split line into parts to seperate them
-                    current_line = buffer[cursor_location[0]]
-                    left = current_line[:cursor_location[1]]
-                    right = current_line[cursor_location[1]:]
-
-                    # Split the two onto different lines
-                    buffer[cursor_location[0]] = left
-                    buffer.insert(cursor_location[0] + 1, right)
-                except IndexError:
-                    # If the line is empty then create new empty line
-                    buffer.append([])
-
-                # Fix cursor location
-                cursor_location[0] += 1
-                cursor_location[1] = 0
-
+                editing.new_line(buffer, cursor_location)
                 changed = True
-
-            ##########################
             
             # Save file when control + s is clicked
             elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
@@ -168,11 +118,11 @@ while running:
         hold_time += dt
         
         if waiting_for_initial and hold_time >= c.initial_delay:
-            cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
+            cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
             waiting_for_initial = False
             hold_time = 0
         elif not waiting_for_initial and hold_time >= c.repeat_time:
-            cursor_location, last_y = utils.move_cursor(held_key, cursor_location, step, buffer, last_y)
+            cursor_location, last_y = utils.take_inputs(held_key, cursor_location, buffer, last_y)
             hold_time = 0
 
     ##########################
