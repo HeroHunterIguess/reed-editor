@@ -46,15 +46,17 @@ def write_buffer(buffer, filename):
         txt_file.write(data)
 
 # Take in lots of info from main.py and process inputs
-def take_inputs(key, cursor_location, buffer, last_y):
+def take_inputs(event, cursor_location, buffer, last_y, changed):
 
     if pygame.key.get_mods() & pygame.KMOD_CTRL:
         step = c.large_step
+        holding_ctrl = True
     else: 
         step = 1
+        holding_ctrl = False
 
     # Navigate cursor with arrow keys
-    if key == pygame.K_LEFT:
+    if event.key == pygame.K_LEFT:
         # Check if its moving lines or moving on one line
         if cursor_location[1] == 0 and cursor_location[0] != 0:
             cursor_location[0] -= 1
@@ -65,7 +67,7 @@ def take_inputs(key, cursor_location, buffer, last_y):
             last_y = cursor_location[1]
             make_cursor_pos_valid(buffer, cursor_location)
 
-    elif key == pygame.K_RIGHT:
+    elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
         if cursor_location[1] == len(buffer[cursor_location[0]]) and cursor_location[0] < len(buffer) - 1:
             cursor_location[0] += 1
@@ -76,7 +78,7 @@ def take_inputs(key, cursor_location, buffer, last_y):
             last_y = cursor_location[1]
             make_cursor_pos_valid(buffer, cursor_location)
     
-    elif key == pygame.K_DOWN:
+    elif event.key == pygame.K_DOWN:
         cursor_location[0] += step
         cursor_location[1] = last_y
 
@@ -86,10 +88,34 @@ def take_inputs(key, cursor_location, buffer, last_y):
 
         make_cursor_pos_valid(buffer, cursor_location)
     
-    elif key == pygame.K_UP:
+    elif event.key == pygame.K_UP:
         cursor_location[0] -= step
         cursor_location[1] = last_y
         
         make_cursor_pos_valid(buffer, cursor_location)
     
-    return cursor_location, last_y
+    # Allow backspace to delete characters
+    if event.key == pygame.K_BACKSPACE:
+        buffer, cursor_location = editing.backspace(buffer, cursor_location, holding_ctrl)
+        
+        changed = True
+    
+    # Allow delete key to function properly
+    elif event.key == pygame.K_DELETE:
+        # Delete next character
+        buffer, cursor_location = editing.delete(buffer, cursor_location, holding_ctrl)
+
+        changed = True
+    
+    # Allow enter to add new line
+    elif event.key == pygame.K_RETURN:
+        buffer, cursor_location = editing.new_line(buffer, cursor_location)
+        changed = True
+    
+    # Insert character
+    elif event.unicode:
+        buffer, cursor_location = editing.insert_character(buffer, cursor_location, event)
+
+        changed = True
+    
+    return buffer,cursor_location, last_y, changed
