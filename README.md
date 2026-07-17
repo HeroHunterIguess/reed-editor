@@ -1,6 +1,6 @@
 # Reed
 
-![image](https://github.com/HeroHunterIguess/reed-editor/blob/main/images/example_image.png)
+![image](https://github.com/HeroHunterIguess/reed-editor/blob/main/images/showcase.png)
 
 This is early in development, and not very useful right now but I plan to turn this into a finished simple text editor.
 This will not have any advanced editing features or mouse usage, it is an extremely simple keyboard-only editor. 
