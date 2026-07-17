@@ -2,33 +2,34 @@
 
 import config as c
 
+# States repeatedly references as 's' to shorten code and improve readibility
+
+
 # Handle hitting enter for a new line
-def new_line(buffer, cursor_location):
+def new_line(s):
     # Try-except incase the line is empty
     try:
-        len(buffer[cursor_location[0]])
+        len(s.buffer[s.cursor_location[0]])
 
         # Split line into parts to seperate them
-        current_line = buffer[cursor_location[0]]
-        left = current_line[:cursor_location[1]]
-        right = current_line[cursor_location[1]:]
+        current_line = s.buffer[s.cursor_location[0]]
+        left = current_line[ : s.cursor_location[1]]
+        right = current_line[s.cursor_location[1]:]
 
         # Split the two onto different lines
-        buffer[cursor_location[0]] = left
-        buffer.insert(cursor_location[0] + 1, right)
+        s.buffer[s.cursor_location[0]] = left
+        s.buffer.insert(s.cursor_location[0] + 1, right)
     except IndexError:
         # If the line is empty then create new empty line
-        buffer.append([])
+        s.buffer.append([])
 
     # Fix cursor location
-    cursor_location[0] += 1
-    cursor_location[1] = 0
-
-    return buffer, cursor_location
+    s.cursor_location[0] += 1
+    s.cursor_location[1] = 0
 
 # Handle backspacing cases
-def backspace(buffer, cursor_location, holding_ctrl):
-    line = buffer[cursor_location[0]]
+def backspace(s, holding_ctrl):
+    line = s.buffer[s.cursor_location[0]]
     removed_space = False
 
     # Delete whole word if holding control
@@ -37,22 +38,22 @@ def backspace(buffer, cursor_location, holding_ctrl):
 
         # If youre on a space, just delete that space
         try:
-            if buffer[cursor_location[0]][cursor_location[1] - 1] == " ":
+            if s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1] == " ":
                 spaces = 0
 
-                for char in reversed(buffer[cursor_location[0]][ : cursor_location[1]]):
+                for char in reversed(s.buffer[s.cursor_location[0]][ : s.cursor_location[1]]):
                     if char == " ": 
                         spaces += 1
                     else:
                         break
 
-                del buffer[cursor_location[0]][cursor_location[1] - spaces : cursor_location[1]]
-                cursor_location[1] -= spaces
+                del s.buffer[s.cursor_location[0]][s.cursor_location[1] - spaces : s.cursor_location[1]]
+                s.cursor_location[1] -= spaces
                 removed_space = True
             
             # Delete whole word
             if not removed_space:
-                for char in reversed(line[:cursor_location[1]]):
+                for char in reversed(line[ : s.cursor_location[1]]):
                     if char != " ":
                         moves += 1
                     else:
@@ -60,81 +61,73 @@ def backspace(buffer, cursor_location, holding_ctrl):
                         break
 
                 # Delete characters
-                start = cursor_location[1] - moves
-                del line[start:cursor_location[1]]
+                start = s.cursor_location[1] - moves
+                del line[start:s.cursor_location[1]]
 
-                cursor_location[1] = start
+                s.cursor_location[1] = start
         except IndexError:
             pass
     else:
         # Delete previous character in standard usage
-        if cursor_location[1] > 0:
-            buffer[cursor_location[0]].pop(cursor_location[1] - 1)
-            cursor_location[1] -= 1
+        if s.cursor_location[1] > 0:
+            s.buffer[s.cursor_location[0]].pop(s.cursor_location[1] - 1)
+            s.cursor_location[1] -= 1
         
         # If line is empty then remove the \n before
-        elif cursor_location[0] > 0:
-            previous_line_len = len(buffer[cursor_location[0] - 1])
+        elif s.cursor_location[0] > 0:
+            previous_line_len = len(s.buffer[s.cursor_location[0] - 1])
             
             # Try-except to prevent index overflow with empty line
             try:
-                len(buffer[cursor_location[0]])
+                len(s.buffer[s.cursor_location[0]])
                 # Move current lines characters to the line above
-                buffer[cursor_location[0] - 1].extend(buffer[cursor_location[0]])
+                s.buffer[s.cursor_location[0] - 1].extend(s.buffer[s.cursor_location[0]])
             
                 # Remove current line
-                buffer.pop(cursor_location[0])
+                s.buffer.pop(s.cursor_location[0])
             except IndexError:
                 pass
 
             # Fix cursor location
-            cursor_location[0] -= 1
-            cursor_location[1] = previous_line_len
-    
-    return buffer, cursor_location
+            s.cursor_location[0] -= 1
+            s.cursor_location[1] = previous_line_len
 
 # Handle hitting delete key 
 # Currently cannot delete on end of line to merge with next 
-def delete(buffer, cursor_location, holding_ctrl):
-    line = buffer[cursor_location[0]]
+def delete(s, holding_ctrl):
+    line = s.buffer[s.cursor_location[0]]
 
     # If holding control delete whole word
     if holding_ctrl:
         moves = 0
 
         # If youre on a space, delete only that space
-        if cursor_location[1] < len(line) and line[cursor_location[1]] == " ":
-            del line[cursor_location[1]]
+        if s.cursor_location[1] < len(line) and line[s.cursor_location[1]] == " ":
+            del line[s.cursor_location[1]]
         
         else: 
-            for char in line[cursor_location[1]:]:
+            for char in line[s.cursor_location[1] : ]:
                 if char != " ":
                     moves += 1
                 else:
                     break   
             
             # Delete word
-            del line[cursor_location[1]:cursor_location[1] + moves]
+            del line[s.cursor_location[1] : s.cursor_location[1] + moves]
 
     else:
         # Standard single character delete
-        if cursor_location[1] < len(line):
-            buffer[cursor_location[0]].pop(cursor_location[1])
-
-    return buffer, cursor_location
+        if s.cursor_location[1] < len(line):
+            s.buffer[s.cursor_location[0]].pop(s.cursor_location[1])
 
 # Insert given unicode character
-def insert_character(buffer, cursor_location, event):
-    buffer[cursor_location[0]].insert(cursor_location[1], event.unicode)
-    cursor_location[1] += 1
-
-    return buffer, cursor_location
+def insert_character(s, event):
+    s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], event.unicode)
+    s.cursor_location[1] += 1
 
 # Insert tab spaces
-def tab(buffer, cursor_location):
+def tab(s):
     for i in range(c.tab_spaces):   
 
-        buffer[cursor_location[0]].insert(cursor_location[1], " ")
-        cursor_location[1] += 1
-
-    return buffer, cursor_location
+        s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], " ")
+        s.cursor_location[1] += 1

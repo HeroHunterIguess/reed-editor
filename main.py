@@ -4,7 +4,7 @@
 
 
 # Initial set up 
-import sys, os, pygame, pygame.locals, utils, rendering, config as c
+import sys, os, pygame, pygame.locals, utils, state, rendering, config as c
 pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
@@ -12,13 +12,8 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
 
-cursor_location = [0, 0]
-last_y = 0
-
-# Holding repeats
-held_event = None
-hold_time = 0
-waiting_for_initial = False
+# Load char_width into utils
+utils.initialize(rendering.char_width)
 
 # Default path if none is passed
 # This will likely be changed later
@@ -39,13 +34,14 @@ buffer = [list(line) for line in utils.read_file(filepath).splitlines()]
 if not buffer:
     buffer = [[]]
 
-# Keep track of if buffer has changed since last save
-changed = False
+# Initialize states w/ all requires editor states
+states = state.editor_states(
+    buffer = buffer,
+    cursor_location = [0, 0],
+    filepath = filepath
+)
 
 ##########################
-
-# Initialize char_width into utils.py
-utils.initialize(rendering.char_width)
 
 # Begin update/processing loop
 running = True
@@ -56,7 +52,7 @@ while running:
     dt = clock.tick(60)
 
     # Draw screen
-    rendering.draw(screen, buffer, cursor_location, filepath, changed)
+    rendering.draw(screen, states)
 
     ##########################
 
@@ -70,48 +66,48 @@ while running:
         
         # Clear held key
         if event.type == pygame.KEYUP:
-            if held_event is not None and event.key == held_event.key:
-                held_event = None
+            if states.held_event is not None and event.key == states.held_event.key:
+                states.held_event = None
 
         # Keybinds
         if event.type == pygame.KEYDOWN:
 
             # Save file when control + s is clicked
             if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                utils.write_buffer(buffer, filepath)
+                utils.write_buffer(states)
 
                 # Update unsaved alert to be gone
-                changed = False
+                states.changed = False
             
             # Allow ctrl+c to copy entire file 
             elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                utils.copy_all(buffer)
+                utils.copy_all(states.buffer)
             
             # All initial inputs
             else:
-                hold_time = 0
-                held_event = event
-                waiting_for_initial = True
+                states.hold_time = 0
+                states.held_event = event
+                states.waiting_for_initial = True
 
                 # Initial move
-                buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
+                utils.take_inputs(states, event)
             
     ##########################
 
     # Repeat inputs if they are held
-    if held_event is not None:
+    if states.held_event is not None:
 
-        hold_time += dt
+        states.hold_time += dt
         
         # First input after intial_delay
-        if waiting_for_initial and hold_time >= c.initial_delay:
-            buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
-            waiting_for_initial = False
-            hold_time = 0
+        if states.waiting_for_initial and states.hold_time >= c.initial_delay:
+            utils.take_inputs(states, event)
+            states.waiting_for_initial = False
+            states.hold_time = 0
         # Repeating at a delay of repeat_time 
-        elif not waiting_for_initial and hold_time >= c.repeat_time:
-            buffer, cursor_location, last_y, changed = utils.take_inputs(held_event, cursor_location, buffer, last_y, changed)
-            hold_time = 0
+        elif not states.waiting_for_initial and states.hold_time >= c.repeat_time:
+            utils.take_inputs(states, event)
+            states.hold_time = 0
 
     ##########################
 
