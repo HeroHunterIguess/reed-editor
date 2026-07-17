@@ -1,7 +1,7 @@
-/build
-/__pycache__
-/v0.0.2-python
-/.git
+build
+__pycache__
+v0.0.2-python
+.git
 Reed.spec
 main.spec
 .gitattributes
