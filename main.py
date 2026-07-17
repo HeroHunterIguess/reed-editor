@@ -2,6 +2,7 @@
 
 ### Main logic ###
 
+
 # Initial set up 
 import sys, os, pygame, pygame.locals, utils, rendering, config as c
 pygame.init()

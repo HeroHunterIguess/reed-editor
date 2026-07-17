@@ -1,5 +1,6 @@
 ### Rendering ###
 
+
 import pygame, config as c
 
 # Initialization
