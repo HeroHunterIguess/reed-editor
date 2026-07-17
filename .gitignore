@@ -11,3 +11,5 @@ tempCodeRunnerFile.py
 .idea/
 .DS_Store
 Dockerfile
+Reed.spec
+main.spec
