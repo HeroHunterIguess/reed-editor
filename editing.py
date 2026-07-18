@@ -43,6 +43,7 @@ def backspace(s, holding_ctrl):
 
         # Remove current line
         s.buffer.pop(line_num)
+        line_num -= 1
 
         # Fix cursor placement
         s.cursor_location[0] -= 1
@@ -55,7 +56,7 @@ def backspace(s, holding_ctrl):
     
     ##########################
 
-    # Runs control backspace even after deleting first char already
+    # Runs control backspace even after deleting first char already - This is intended
     if holding_ctrl:
         count = 0
         deleted_spaces = False
@@ -82,32 +83,50 @@ def backspace(s, holding_ctrl):
         s.cursor_location[1] -= count
 
 # Handle hitting delete key 
-# Currently cannot delete on end of line to merge with next 
 def delete(s, holding_ctrl):
-    line = s.buffer[s.cursor_location[0]]
+    line_num = s.cursor_location[0]
+    line = s.buffer[line_num]
 
-    # If holding control delete whole word
-    if holding_ctrl:
-        moves = 0
-
-        # If youre on a space, delete only that space
-        if s.cursor_location[1] < len(line) and line[s.cursor_location[1]] == " ":
-            del line[s.cursor_location[1]]
+    # On last character
+    # Runs even if you hit control delete
+    if s.cursor_location[1] == len(line) and line_num < len(s.buffer) - 1: 
         
-        else: 
+        # Move characters from previous line
+        s.buffer[line_num].extend(s.buffer[line_num + 1])
+
+        # Remove next line
+        s.buffer.pop(line_num + 1)
+    
+    # In a normal case delete 1 character
+    elif s.cursor_location[1] < len(s.buffer[s.cursor_location[0]]):
+        del s.buffer[line_num][s.cursor_location[1]]
+    
+    ##########################
+
+    # Runs control delete even after deleting first char already - This is intended
+    if holding_ctrl:
+        count = 0
+        deleted_spaces = False
+
+        # Delete spaces
+        if s.cursor_location[1] < len(line) and s.buffer[line_num][s.cursor_location[1]] == " ":
+            for char in line[s.cursor_location[1] : ]:
+                if char == " ":
+                    count += 1
+                else:
+                    deleted_spaces = True
+                    break
+
+        # Iterate through looking for word
+        if not deleted_spaces:
             for char in line[s.cursor_location[1] : ]:
                 if char != " ":
-                    moves += 1
+                    count += 1
                 else:
-                    break   
-            
-            # Delete word
-            del line[s.cursor_location[1] : s.cursor_location[1] + moves]
+                    break
 
-    else:
-        # Standard single character delete
-        if s.cursor_location[1] < len(line):
-            s.buffer[s.cursor_location[0]].pop(s.cursor_location[1])
+        # Delete word and update buffer & cursor pos
+        del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
 
 # Insert given unicode character
 def insert_character(s, event):
