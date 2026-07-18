@@ -29,6 +29,13 @@ def initialize_config():
 
 def load_config(config_path):
     # load config into local easy to access file
-    with open(config_path, "r") as remote_config, open("config.py", "w") as local_config:
-        for line in remote_config:
-            local_config.write(line)
+    try:
+        with open(config_path, "r") as remote_config, open("config.py", "w") as local_config:
+            for line in remote_config:
+                local_config.write(line)
+    
+    # create local config if it doesnt exist
+    except FileNotFoundError:
+        with open(config_path, "r") as remote_config, open("config.py", "x") as local_config:
+            for line in remote_config:
+                local_config.write(line)
