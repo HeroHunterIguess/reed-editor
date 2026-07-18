@@ -16,7 +16,7 @@ import os # This only exists to choose defaults based on OS
 #############################
 
 background_color = (35, 35, 41)
-window_size = (1000, 650)
+window_size = (700, 450)
 
 
 ###################
