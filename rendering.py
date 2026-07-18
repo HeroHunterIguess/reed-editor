@@ -119,6 +119,3 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Draw the alert on the context menu if the file has unsaved changes
     if s.changed:
         pygame.draw.circle(screen, c.unsaved_alert_color, (c.window_size[0] - c.unsaved_alert_corner_padding, c.window_size[1] - c.unsaved_alert_corner_padding), c.unsaved_alert_size)
-    
-    # Update display
-    pygame.display.flip()
