@@ -15,6 +15,7 @@ char_width = font.size(" ")[0]
 y_offset = 0
 x_offset = 0
 
+
 # Alter offests
 def alter_y_offset(negative, amount):
     global y_offset
@@ -47,6 +48,7 @@ def get_x_offset():
 
 def get_y_offset():
     return y_offset
+
 
 # Draw everything in the window
 def draw(screen, s): # s = states (shortened because of already long lines here) 
@@ -95,7 +97,6 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
             screen.blit(line_number_surface, (c.padding_left , y - y_offset + (c.line_height - line_number_font.get_height()) // 2 + c.vertical_number_offset))
 
             y += c.line_height
-
 
     ##########################
 

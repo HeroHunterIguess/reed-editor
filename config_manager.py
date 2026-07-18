@@ -1,4 +1,5 @@
-### Initializing default config ###
+### Initializing configuration ###
+
 
 from pathlib import Path
 import os, shutil, importlib.util

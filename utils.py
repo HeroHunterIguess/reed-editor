@@ -1,9 +1,11 @@
 ### Util functions ###
 
+
 import pygame, pyperclip, editing, config as c, rendering as r
 
 char_width = 0
 
+# Get char_width from the font in main
 def initialize(ch_width):
     global char_width
     char_width = ch_width
@@ -150,7 +152,6 @@ def take_inputs(states, event):
             if r.get_y_offset() <= 0:
                 r.set_y_offset(0)
                 
-    
     ##########################
 
     # Allow backspace to delete characters

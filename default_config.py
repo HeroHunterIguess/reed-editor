@@ -1,6 +1,7 @@
 ### Default Reed configuration ###
 # If any variables from this file are deleted, the program will not run
 
+
 import os
 
 # General Window Settings

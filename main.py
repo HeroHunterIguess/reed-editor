@@ -25,7 +25,6 @@ if os.name == "posix":
 elif os.name == "nt":
     filepath = os.path.join(os.path.expanduser("~"), "reed_default.txt") # Windows path hasnt been teste
 
-
 # Check if a filepath was passed to the script
 if len(sys.argv) > 1:
     filepath = sys.argv[1]
