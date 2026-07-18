@@ -1,7 +1,7 @@
 ### Editng functions ###
 
 
-import config as c
+from config import c
 
 # Handle hitting enter for a new line
 def new_line(s):

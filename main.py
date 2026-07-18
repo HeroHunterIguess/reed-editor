@@ -4,10 +4,9 @@
 
 
 # Initial set up 
-import config_manager
-config_manager.initialize_config()
+import sys, os, pygame, pygame.locals, utils, state, rendering
+from config import c
 
-import sys, os, pygame, pygame.locals, utils, state, rendering, config as c
 pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()

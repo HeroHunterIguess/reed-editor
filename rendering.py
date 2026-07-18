@@ -1,7 +1,8 @@
 ### Rendering ###
 
 
-import pygame, utils, config as c
+import pygame, utils
+from config import c
 
 # Initialization
 pygame.font.init()

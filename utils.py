@@ -1,7 +1,8 @@
 ### Util functions ###
 
 
-import pygame, pyperclip, editing, config as c, rendering as r
+import pygame, pyperclip, editing, rendering as r
+from config import c
 
 char_width = 0
 
