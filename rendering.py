@@ -66,11 +66,6 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Render main text
     for line_index in range(start_index, end_index):
         line_chars = s.buffer[line_index]
-        line_num = line_index + 1
-
-        if c.line_numbers:
-            line_number_surface = line_number_font.render(str(line_num), True, c.line_number_color)
-            screen.blit(line_number_surface, (c.padding_left - x_offset, y - y_offset + (c.line_height - line_number_font.get_height()) // 2 + c.vertical_number_offset))
 
         # Join text into full lines
         line = "".join(line_chars)
@@ -83,6 +78,24 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
             screen.blit(text_surface, (c.padding_left - x_offset, y - y_offset))
 
         y += c.line_height
+    
+    # Draw line numbers always with background behind them to cover text
+    if c.line_numbers:
+        # Background
+        pygame.draw.rect(screen, c.background_color, (0, 0, c.line_number_width, c.window_size[1] - c.context_info_size))
+
+        y = c.padding_top + (start_index * c.line_height)
+
+        # Actual line numbers
+        for line_index in range(start_index, end_index):
+            line_num = line_index + 1
+
+            line_number_surface = line_number_font.render(str(line_num), True, c.line_number_color)
+            
+            screen.blit(line_number_surface, (c.padding_left , y - y_offset + (c.line_height - line_number_font.get_height()) // 2 + c.vertical_number_offset))
+
+            y += c.line_height
+
 
     ##########################
 

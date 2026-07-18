@@ -26,7 +26,7 @@ padding_left = 3
 # Context menu (default bottom w/ position locked for now)
 context_info_color = (111, 110, 115)
 context_info_size = 15
-context_info_padding_bottom = 3
+context_info_padding_bottom = 1
 context_background_color = (22, 22, 28)
 context_background_padding_bottom = 2
 
@@ -51,7 +51,7 @@ line_numbers = True # enabled?
 line_number_text_size = 12
 line_number_width = 25
 line_number_color = (121, 120, 125)
-vertical_number_offset = 3
+vertical_number_offset = 1
 
 # Misc
 tab_spaces = 4

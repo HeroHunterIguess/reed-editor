@@ -12,9 +12,6 @@ pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
 
-# create default config or load existing
-config_manager.initialize_config()
-
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
 
