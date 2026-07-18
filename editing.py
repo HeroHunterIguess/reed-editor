@@ -29,68 +29,57 @@ def new_line(s):
 
 # Handle backspacing cases
 def backspace(s, holding_ctrl):
-    line = s.buffer[s.cursor_location[0]]
-    removed_space = False
+    line_num = s.cursor_location[0]
+    line = s.buffer[line_num]
 
-    # Delete whole word if holding control
-    if holding_ctrl:
-        moves = 0
+    # On first character (& not first line)
+    # Runs even if you hit control backspace
+    if s.cursor_location[1] == 0 and line_num != 0: 
 
-        # If youre on a space, just delete that space
-        try:
-            if s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1] == " ":
-                spaces = 0
-
-                for char in reversed(s.buffer[s.cursor_location[0]][ : s.cursor_location[1]]):
-                    if char == " ": 
-                        spaces += 1
-                    else:
-                        break
-
-                del s.buffer[s.cursor_location[0]][s.cursor_location[1] - spaces : s.cursor_location[1]]
-                s.cursor_location[1] -= spaces
-                removed_space = True
-            
-            # Delete whole word
-            if not removed_space:
-                for char in reversed(line[ : s.cursor_location[1]]):
-                    if char != " ":
-                        moves += 1
-                    else:
-                        moves += 1
-                        break
-
-                # Delete characters
-                start = s.cursor_location[1] - moves
-                del line[start:s.cursor_location[1]]
-
-                s.cursor_location[1] = start
-        except IndexError:
-            pass
-    else:
-        # Delete previous character in standard usage
-        if s.cursor_location[1] > 0:
-            s.buffer[s.cursor_location[0]].pop(s.cursor_location[1] - 1)
-            s.cursor_location[1] -= 1
+        previous_line_length = len(s.buffer[line_num - 1])
         
-        # If line is empty then remove the \n before
-        elif s.cursor_location[0] > 0:
-            previous_line_len = len(s.buffer[s.cursor_location[0] - 1])
-            
-            # Try-except to prevent index overflow with empty line
-            try:
-                len(s.buffer[s.cursor_location[0]])
-                # Move current lines characters to the line above
-                s.buffer[s.cursor_location[0] - 1].extend(s.buffer[s.cursor_location[0]])
-            
-                # Remove current line
-                s.buffer.pop(s.cursor_location[0])
-            except IndexError:
-                pass
+        # Move characters to previous line
+        s.buffer[line_num - 1].extend(line)
 
-            # Fix cursor location
-            s.cursor_location[0] -= 1
-            s.cursor_location[1] = previous_line_len
+        # Remove current line
+        s.buffer.pop(line_num)
+
+        # Fix cursor placement
+        s.cursor_location[0] -= 1
+        s.cursor_location[1] = previous_line_length
+    
+    # In a normal case delete 1 character
+    elif s.cursor_location[1] != 0:
+        del s.buffer[line_num][s.cursor_location[1] - 1]
+        s.cursor_location[1] -= 1
+    
+    ##########################
+
+    # Runs control backspace even after deleting first char already
+    if holding_ctrl:
+        count = 0
+        deleted_spaces = False
+
+        # Delete spaces
+        if s.cursor_location[1] > 0 and s.buffer[line_num][s.cursor_location[1] - 1] == " ":
+            for char in reversed(line[ : s.cursor_location[1]]):
+                if char == " ":
+                    count += 1
+                else:
+                    deleted_spaces = True
+                    break
+
+        # Iterate through looking for word
+        if not deleted_spaces:
+            for char in reversed(line[ : s.cursor_location[1]]):
+                if char != " ":
+                    count += 1
+                else:
+                    break
+
+        # Delete word and update buffer & cursor pos
+        del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
+        s.cursor_location[1] -= count
 
 # Handle hitting delete key 
 # Currently cannot delete on end of line to merge with next 

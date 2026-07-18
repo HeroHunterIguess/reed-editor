@@ -42,6 +42,7 @@ if not buffer:
     buffer = [[]]
 
 # Initialize states w/ all requires editor states
+# Throughout the program states is commonly referred to as s
 states = state.editor_states(
     buffer = buffer,
     cursor_location = [0, 0],

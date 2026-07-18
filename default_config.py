@@ -1,7 +1,6 @@
 ### Default Reed configuration ###
 # If any variables from this file are deleted, the program will not run
 
-
 import os
 
 # General Window Settings
@@ -12,7 +11,7 @@ window_size = (1000, 650)
 # Only monospace fonts will work properly
 # Default based on operating system defaults
 if os.name == "posix":
-    font = "Noto Sans Mono" 
+    font = "Monospace" 
 elif os.name == "nt":
     font = "Cascadia Code"
 
