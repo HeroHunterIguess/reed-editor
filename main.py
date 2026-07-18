@@ -4,10 +4,16 @@
 
 
 # Initial set up 
+import config_manager
+config_manager.initialize_config()
+
 import sys, os, pygame, pygame.locals, utils, state, rendering, config as c
 pygame.init()
 pygame.font.init()
 clock = pygame.time.Clock()
+
+# create default config or load existing
+config_manager.initialize_config()
 
 screen = pygame.display.set_mode(c.window_size)
 pygame.display.set_caption("Reed editor")
@@ -20,7 +26,8 @@ utils.initialize(rendering.char_width)
 if os.name == "posix":
     filepath = "/home/herohunter/reed_default.txt" 
 elif os.name == "nt":
-    filepath = os.path.join(os.path.expanduser("~"), "reed_default.txt") # Windows path hasnt been tested
+    filepath = os.path.join(os.path.expanduser("~"), "reed_default.txt") # Windows path hasnt been teste
+
 
 # Check if a filepath was passed to the script
 if len(sys.argv) > 1:

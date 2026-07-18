@@ -54,15 +54,19 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Set background
     screen.fill(c.background_color)
 
+    # Find visible lines
+    start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)
+    end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
+
     # Start text at the top of the screen (+ padding)
-    y = c.padding_top
+    y = c.padding_top + (start_index * c.line_height)
 
     line_num = 0
 
     # Render main text
-    for line_chars in s.buffer:
-
-        line_num += 1
+    for line_index in range(start_index, end_index):
+        line_chars = s.buffer[line_index]
+        line_num = line_index + 1
 
         if c.line_numbers:
             line_number_surface = line_number_font.render(str(line_num), True, c.line_number_color)
