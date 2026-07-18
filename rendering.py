@@ -61,7 +61,7 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
 
     # Highlight current line
-    pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top, c.window_size[0], c.line_height))
+    pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top - y_offset, c.window_size[0], c.line_height))
 
     # Start text at the top of the screen (+ padding)
     y = c.padding_top + (start_index * c.line_height)
@@ -86,10 +86,9 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     
     # Display cursor @ location * char_width, with a set width of 2, and height being the line height 
     if c.line_numbers: # Improve this if so its only 1 of these cursor lines
-        pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset + c.line_number_width, s.cursor_location[0] * c.line_height + 4 - y_offset, 2, c.font_size))
+        pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset + c.line_number_width, s.cursor_location[0] * c.line_height + 2 - y_offset, 2, c.font_size + 1))
     else:
         pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset, s.cursor_location[0] * c.line_height + 4 - y_offset, 2, c.font_size))
-
 
     # Draw line numbers always with background behind them to cover text
     if c.line_numbers:

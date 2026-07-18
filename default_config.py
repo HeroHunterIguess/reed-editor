@@ -1,65 +1,124 @@
-### Default Reed configuration ###
+#########################################
+### Reed Editor default configuration ###
+#########################################
 
 # WARNING:
 # If any variables from this file are deleted, the program will not run
-# YOU HAVE BEEN WARNED.
+
+# You may modify any values in here - just keep in mind its easy to make it look messed up
 
 
-import os
+import os # This only exists to choose defaults based on OS
 
+
+#############################
 ## General Window Settings ##
-background_color = (39, 40, 43)
+#############################
+
+background_color = (35, 35, 41)
 window_size = (1000, 650)
 
+
+###################
 ## Text settings ##
+###################
+
 # Only monospace fonts will work properly
-# Default based on operating system defaults
+# Default fonts are selected based on the operating system
+
 if os.name == "posix":
     font = "Monospace" 
 elif os.name == "nt":
     font = "Cascadia Code"
 
-text_color = (255, 255, 255)
+text_color = (216, 216, 237)
+
 font_size = 17
 line_height = 20
 
-## Padding on text position ##
+
+###################
+## Text position ##
+###################
+
 padding_top = 1
 padding_left = 3
 
-## Context menu (default bottom w/ position locked for now) ##
-context_info_color = (111, 110, 115)
-context_info_size = 15
-context_info_padding_bottom = 1
+
+#############################
+## Status bar/Context menu ## 
+#############################
+
+context_info_color = (142, 135, 163) # (text color)
 context_background_color = (22, 22, 28)
+
+context_info_size = 17 # (text size)
+
+context_info_padding_bottom = 2
 context_background_padding_bottom = 2
 
-unsaved_alert_color = (98, 103, 152)
+
+###############################
+## Unsaved changes indicator ##
+###############################
+
+unsaved_alert_color = (143, 135, 173)
+
 unsaved_alert_size = 5
 unsaved_alert_corner_padding = 11
 
-## Cursor settings ##
-cursor_color = (255, 255, 255)
-large_step = 5
 
-## Input repeating delay (ms) ##
-initial_delay = 430
+#####################
+## Cursor settings ##
+#####################
+
+cursor_color = (255, 255, 255)
+large_step = 5 # Distance moved when holding control
+
+
+####################
+## Input settings ##
+####################
+
+# Delay when holding keys
+# Delay in ms
+initial_delay = 430 
 repeat_time = 31
 
+
+############################
 ## View movement (pixels) ##
+############################
+
 view_move_amount = 20
 view_padding = 120
 
-## Line numbers ##
-line_numbers = True # enabled?
-line_number_text_size = 12
-line_number_width = 25
-line_number_color = (121, 120, 125)
-vertical_number_offset = 1
-line_number_background_color = (29, 34, 36)
+# Amount of lines rendered outside of visible range
+# This is recommended to be left at default for performance
+buffer_lines = 5
 
-## Misc ##
+
+##################
+## Line numbers ##
+##################
+
+line_numbers = True # enabled?
+
+line_number_color = (121, 120, 125)
+line_number_background_color = (28, 28, 33)
+
+line_number_text_size = 13
+line_number_width = 30
+
+vertical_number_offset = 1
+
+
+###################
+## Miscellaneous ##
+###################
+
+# Spaces inserted when pressing tab
 tab_spaces = 4
 
-buffer_lines = 5 # Amount of lines that render off screen before the rest are culled
-current_line_highlight_color = (65, 68, 71) # To disable highlight make this match background color
+# Set this to the background color if you want to disable highlighting
+current_line_highlight_color = (53, 50, 64) 

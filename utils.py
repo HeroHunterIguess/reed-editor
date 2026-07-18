@@ -70,6 +70,10 @@ def copy_all(buffer):
 # Take in lots of info from main.py and process inputs
 def take_inputs(states, event):
 
+    # Stop if the event isnt a standard key press
+    if event.type != pygame.KEYDOWN:
+        return
+
     # Keep track of if user is holding control
     if pygame.key.get_mods() & pygame.KMOD_CTRL:
         step = c.large_step
