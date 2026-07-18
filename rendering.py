@@ -86,7 +86,7 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     
     # Display cursor @ location * char_width, with a set width of 2, and height being the line height 
     if c.line_numbers: # Improve this if so its only 1 of these cursor lines
-        pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset + c.line_number_width, s.cursor_location[0] * c.line_height + 2 - y_offset, 2, c.font_size + 1))
+        pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset + c.line_number_width, s.cursor_location[0] * c.line_height + 2 - y_offset, 2, c.font_size+ 1))
     else:
         pygame.draw.rect(screen, c.cursor_color, (s.cursor_location[1] * char_width - 1 + c.padding_left - x_offset, s.cursor_location[0] * c.line_height + 4 - y_offset, 2, c.font_size))
 
@@ -114,7 +114,7 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
 
     # Draw the text for the menu
     context_text = context_font.render(s.filepath, True, c.context_info_color)
-    screen.blit(context_text, (0, c.window_size[1] - c.line_height - c.context_info_padding_bottom))
+    screen.blit(context_text, (0 + c.context_info_padding, c.window_size[1] - c.line_height - c.context_info_padding))
 
     # Draw the alert on the context menu if the file has unsaved changes
     if s.changed:

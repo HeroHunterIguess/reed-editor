@@ -50,11 +50,11 @@ padding_left = 3
 #############################
 
 context_info_color = (142, 135, 163) # (text color)
-context_background_color = (22, 22, 28)
+context_background_color = (24, 23, 31)
 
 context_info_size = 17 # (text size)
 
-context_info_padding_bottom = 2
+context_info_padding = 2
 context_background_padding_bottom = 2
 
 
