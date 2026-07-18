@@ -1,14 +1,17 @@
 ### Default Reed configuration ###
+
+# WARNING:
 # If any variables from this file are deleted, the program will not run
+# YOU HAVE BEEN WARNED.
 
 
 import os
 
-# General Window Settings
-background_color = (39,40,43)
+## General Window Settings ##
+background_color = (39, 40, 43)
 window_size = (1000, 650)
 
-# Text settings
+## Text settings ##
 # Only monospace fonts will work properly
 # Default based on operating system defaults
 if os.name == "posix":
@@ -16,15 +19,15 @@ if os.name == "posix":
 elif os.name == "nt":
     font = "Cascadia Code"
 
-text_color = (255,255,255)
+text_color = (255, 255, 255)
 font_size = 17
 line_height = 20
 
-# Padding on text position
+## Padding on text position ##
 padding_top = 1
 padding_left = 3
 
-# Context menu (default bottom w/ position locked for now)
+## Context menu (default bottom w/ position locked for now) ##
 context_info_color = (111, 110, 115)
 context_info_size = 15
 context_info_padding_bottom = 1
@@ -35,26 +38,28 @@ unsaved_alert_color = (98, 103, 152)
 unsaved_alert_size = 5
 unsaved_alert_corner_padding = 11
 
-# Cursor settings
+## Cursor settings ##
 cursor_color = (255, 255, 255)
 large_step = 5
 
-# Input repeating delay (ms)
+## Input repeating delay (ms) ##
 initial_delay = 430
 repeat_time = 31
 
-# View movement (pixels)
+## View movement (pixels) ##
 view_move_amount = 20
-view_padding = 100
+view_padding = 120
 
-# Line numbers
+## Line numbers ##
 line_numbers = True # enabled?
 line_number_text_size = 12
 line_number_width = 25
 line_number_color = (121, 120, 125)
 vertical_number_offset = 1
+line_number_background_color = (29, 34, 36)
 
-# Misc
+## Misc ##
 tab_spaces = 4
 
-buffer_lines = 5 # amount of lines that render off screen before the rest are culled
+buffer_lines = 5 # Amount of lines that render off screen before the rest are culled
+current_line_highlight_color = (65, 68, 71) # To disable highlight make this match background color

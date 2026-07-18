@@ -1,10 +1,11 @@
 ### Default Reed configuration ###
 # If any variables from this file are deleted, the program will not run
 
+
 import os
 
 # General Window Settings
-background_color = (39,40,43)
+background_color = (39, 40, 43)
 window_size = (1000, 650)
 
 # Text settings
@@ -15,7 +16,7 @@ if os.name == "posix":
 elif os.name == "nt":
     font = "Cascadia Code"
 
-text_color = (255,255,255)
+text_color = (255, 255, 255)
 font_size = 17
 line_height = 20
 
@@ -52,8 +53,10 @@ line_number_text_size = 12
 line_number_width = 25
 line_number_color = (121, 120, 125)
 vertical_number_offset = 1
+line_number_background_color = (29, 34, 36)
 
 # Misc
 tab_spaces = 4
 
 buffer_lines = 5 # amount of lines that render off screen before the rest are culled
+current_line_highlight_color = (65, 68, 71)
