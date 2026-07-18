@@ -5,7 +5,7 @@ from pathlib import Path
 import os, shutil, importlib.util
 
 # TESTING OPTION TO ALWAYS SOURCE FROM DEFAULT
-use_default_config = True
+use_default_config = False
 
 def get_config_path():
     if os.name == "nt": # windows
