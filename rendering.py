@@ -114,8 +114,9 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     pygame.draw.rect(screen, c.context_background_color, (0, c.window_size[1] - c.line_height - c.context_background_padding_bottom, c.window_size[0], c.line_height + c.context_background_padding_bottom))
 
     # Draw the text for the menu
-    context_text = context_font.render(s.filepath, True, c.context_info_color)
+    context_text = context_font.render(s.filepath+"   [ "+str(s.cursor_location[0]+1)+","+str(s.cursor_location[1]+1)+" ]", True, c.context_info_color)
     screen.blit(context_text, (0 + c.context_info_padding, c.window_size[1] - c.line_height - c.context_info_padding))
+
 
     # Draw the alert on the context menu if the file has unsaved changes
     if s.changed:

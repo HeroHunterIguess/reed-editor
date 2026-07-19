@@ -5,7 +5,7 @@ from pathlib import Path
 import os, shutil, importlib.util
 
 # TESTING OPTION TO ALWAYS SOURCE FROM DEFAULT
-use_default_config = False
+USE_DEFAULT_CONFIG = False
 
 def get_config_path():
     if os.name == "nt": # windows
@@ -14,7 +14,7 @@ def get_config_path():
         config_directory = Path.home() / ".config" / "reed" / "config.py"
     
     # Override config path and use default
-    if use_default_config:
+    if USE_DEFAULT_CONFIG:
         return Path("default_config.py")
     
     return config_directory
@@ -24,7 +24,7 @@ def initialize_config():
     config_path = get_config_path()
 
     # If using real config then create it if the dir doesnt exist
-    if not use_default_config:
+    if not USE_DEFAULT_CONFIG:
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
     # fill config file
