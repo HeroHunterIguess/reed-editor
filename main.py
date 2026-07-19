@@ -107,12 +107,12 @@ while running:
         
         # First input after intial_delay
         if states.waiting_for_initial and states.hold_time >= c.initial_delay:
-            utils.take_inputs(states, event)
+            utils.take_inputs(states, states.held_event)
             states.waiting_for_initial = False
             states.hold_time = 0
         # Repeating at a delay of repeat_time 
         elif not states.waiting_for_initial and states.hold_time >= c.repeat_time:
-            utils.take_inputs(states, event)
+            utils.take_inputs(states, states.held_event)
             states.hold_time = 0
 
     ##########################

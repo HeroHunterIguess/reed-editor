@@ -143,13 +143,16 @@ def tab(s):
 def paste_text(s):
     data = pyperclip.paste().splitlines()
     line_num = s.cursor_location[0]
+    chars = []
 
+    # Find parts of current line
     left = s.buffer[s.cursor_location[0]][ : s.cursor_location[1]]
     right = s.buffer[s.cursor_location[0]][s.cursor_location[1] : ]
 
     for ind in range(len(data)):
         chars = list(data[ind])
 
+        # Paste text based on cursor location
         if len(data) == 1:
             s.buffer[s.cursor_location[0]] = left + chars + right
         elif ind == 0:
@@ -160,5 +163,7 @@ def paste_text(s):
             s.buffer.insert(line_num, chars)
     
         line_num += 1
-
-    print(data)
+    
+    # Update cursor position
+    s.cursor_location[0] = line_num - 1
+    s.cursor_location[1] = len(chars)
