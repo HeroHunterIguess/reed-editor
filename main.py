@@ -7,7 +7,7 @@
 import sys, os, pygame, pygame.locals, utils, state, editing, rendering
 from config import c
 
-pygame.init()
+pygame.display.init()
 pygame.font.init()
 clock = pygame.time.Clock()
 
