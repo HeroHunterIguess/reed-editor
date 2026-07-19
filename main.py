@@ -4,7 +4,7 @@
 
 
 # Initial set up 
-import sys, os, pygame, pygame.locals, utils, state, rendering
+import sys, os, pygame, pygame.locals, utils, state, editing, rendering
 from config import c
 
 pygame.init()
@@ -85,6 +85,9 @@ while running:
             # Allow ctrl+c to copy entire file 
             elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.copy_all(states.buffer)
+            
+            elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                editing.paste_text(states)
             
             # All initial inputs
             else:

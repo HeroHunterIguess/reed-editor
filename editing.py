@@ -1,6 +1,7 @@
 ### Editng functions ###
 
 
+import pyperclip
 from config import c
 
 # Handle hitting enter for a new line
@@ -137,3 +138,27 @@ def tab(s):
 
         s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], " ")
         s.cursor_location[1] += 1
+
+# Paste text from users clipboard
+def paste_text(s):
+    data = pyperclip.paste().splitlines()
+    line_num = s.cursor_location[0]
+
+    left = s.buffer[s.cursor_location[0]][ : s.cursor_location[1]]
+    right = s.buffer[s.cursor_location[0]][s.cursor_location[1] : ]
+
+    for ind in range(len(data)):
+        chars = list(data[ind])
+
+        if len(data) == 1:
+            s.buffer[s.cursor_location[0]] = left + chars + right
+        elif ind == 0:
+            s.buffer[s.cursor_location[0]] = left + chars
+        elif ind == len(data) - 1:
+            s.buffer.insert(line_num, chars + right)
+        else:
+            s.buffer.insert(line_num, chars)
+    
+        line_num += 1
+
+    print(data)
