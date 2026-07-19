@@ -141,6 +141,9 @@ def take_inputs(states, event):
             r.alter_y_offset(False, c.view_move_amount)
             if r.get_y_offset() >= c.line_height * len(states.buffer) - c.window_size[1] + c.view_padding:
                 r.set_y_offset(c.line_height * len(states.buffer) - c.window_size[1] + c.view_padding)
+                # Limit offset to 0
+                if r.get_y_offset() < 0:
+                    r.set_y_offset(0)
     
     elif event.key == pygame.K_UP:
         if not holding_shift:
