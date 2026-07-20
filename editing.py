@@ -4,8 +4,6 @@
 import pyperclip
 from config import c
 
-history = []
-
 # Handle hitting enter for a new line
 def new_line(s):
     # Try-except incase the line is empty
@@ -27,6 +25,8 @@ def new_line(s):
     # Fix cursor location
     s.cursor_location[0] += 1
     s.cursor_location[1] = 0
+
+    s.history.append(("new_line", None))
 
 # Handle backspacing cases
 def backspace(s, holding_ctrl):
@@ -82,6 +82,8 @@ def backspace(s, holding_ctrl):
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
         s.cursor_location[1] -= count
+    
+    s.history.append(("backspace", holding_ctrl))
 
 # Handle hitting delete key 
 def delete(s, holding_ctrl):
@@ -128,11 +130,15 @@ def delete(s, holding_ctrl):
 
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
+    
+    s.history.append(("delete", holding_ctrl))
 
 # Insert given unicode character
 def insert_character(s, event):
     s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], event.unicode)
     s.cursor_location[1] += 1
+
+    s.history.append(("insert_character", event.unicode))
 
 # Insert tab spaces
 def tab(s):
@@ -140,6 +146,8 @@ def tab(s):
 
         s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], " ")
         s.cursor_location[1] += 1
+    
+    s.history.append(("tab", None))
 
 # Paste text from users clipboard
 def paste_text(s):
@@ -169,3 +177,12 @@ def paste_text(s):
     # Update cursor position
     s.cursor_location[0] = line_num - 1
     s.cursor_location[1] = len(chars)
+
+    s.history.append(("paste_text", data))
+
+def undo(s):
+    pass
+
+def redo(s):
+    pass
+    

@@ -48,7 +48,8 @@ def load_config(config_path):
     return config
 
 
-release_config = """#########################################
+release_config = """
+#########################################
 ### Reed Editor default configuration ###
 #########################################
 
@@ -171,4 +172,5 @@ vertical_number_offset = 1
 tab_spaces = 4
 
 # Set this to the background color if you want to disable highlighting
-current_line_highlight_color = (53, 50, 64) """
+current_line_highlight_color = (53, 50, 64)
+"""

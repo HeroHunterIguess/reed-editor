@@ -41,7 +41,8 @@ if not buffer:
 states = state.editor_states(
     buffer = buffer,
     cursor_location = [0, 0],
-    filepath = filepath
+    filepath = filepath,
+    history = []
 )
 
 ##########################

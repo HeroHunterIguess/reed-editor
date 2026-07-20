@@ -9,6 +9,8 @@ class editor_states:
     buffer: list
     cursor_location: list
     filepath: str
+    history: list
+    history_pos: int = 0
     last_y: int = 0
     changed: bool = False
     held_event: pygame.event.Event | None = None
