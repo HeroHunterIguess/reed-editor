@@ -4,6 +4,8 @@
 import pyperclip
 from config import c
 
+history = []
+
 # Handle hitting enter for a new line
 def new_line(s):
     # Try-except incase the line is empty
