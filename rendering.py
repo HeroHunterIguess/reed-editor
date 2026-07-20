@@ -1,17 +1,13 @@
 ### Rendering ###
 
 
-import pygame, utils
+import utils
 from config import c
 
+import pyglet
+from pyglet import shapes
+
 # Initialization
-pygame.font.init()
-
-font = pygame.font.SysFont(c.font, c.font_size)
-context_font = pygame.font.SysFont(c.font, c.context_info_size)
-line_number_font = pygame.font.SysFont(c.font, c.line_number_text_size)
-
-char_width = font.size(" ")[0]
 
 y_offset = 0
 x_offset = 0
@@ -52,17 +48,23 @@ def get_y_offset():
 
 
 # Draw everything in the window
-def draw(screen, s): # s = states (shortened because of already long lines here) 
+def draw(window, s): # s = states (shortened because of already long lines here) 
+    font = pyglet.font.load(c.font, c.font_size)
+    char_width = font.get_glyphs(" ")[0].advance
+
+    # Clear screen
+    window.clear()
 
     # Set background
-    screen.fill(c.background_color)
+    #screen.fill(c.background_color)
 
     # Find visible lines
     start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)
     end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
 
     # Highlight current line
-    pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top - y_offset, c.window_size[0], c.line_height))
+    highlight = shapes.Rectangle(0, (s.cursor_location[0] * c.line_height + c.padding_top - y_offset), c.window_size[0], c.line_height, c.current_line_highlight_color)
+    highlight.draw()
 
     # Start text at the top of the screen (+ padding)
     y = c.padding_top + (start_index * c.line_height)
@@ -77,11 +79,13 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
         line = "".join(line_chars)
 
         # Display it
-        text_surface = font.render(line, True, c.text_color)
+        
         if c.line_numbers:
-            screen.blit(text_surface, (c.padding_left - x_offset + c.line_number_width, y - y_offset))
-        else:
-            screen.blit(text_surface, (c.padding_left - x_offset, y - y_offset))
+            text = pyglet.text.Label(line, c.font, c.font_size, c.padding_left - x_offset + c.line_number_width, y - y_offset)
+        #else:
+        #    screen.blit(c.padding_left - x_offset, y - y_offset)
+
+        text.draw()
 
         y += c.line_height
     

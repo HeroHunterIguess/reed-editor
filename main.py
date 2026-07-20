@@ -4,15 +4,18 @@
 
 
 # Initial set up 
-import sys, os, pygame, pygame.locals, utils, state, editing, rendering
+import sys, os, pyglet, utils, state, editing, rendering
 from config import c
 
-pygame.display.init()
-pygame.font.init()
-clock = pygame.time.Clock()
+#pygame.display.init()
+#pygame.font.init()
+#clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode(c.window_size)
-pygame.display.set_caption("Reed editor")
+window = pyglet.window.Window(c.window_size[0], c.window_size[1])
+window.set_minimum_size(700, 450)
+
+#screen = pygame.display.set_mode(c.window_size)
+#pygame.display.set_caption("Reed editor")
 
 # Load char_width into utils
 utils.initialize(rendering.char_width)
@@ -45,18 +48,19 @@ states = state.editor_states(
     history = []
 )
 
-##########################
+##########################'
+
+@window.event
+def on_draw():
+    rendering.draw(window, states)
 
 # Begin update/processing loop
-running = True
+#running = True
 
+pyglet.app.run()
+
+"""
 while running:
-
-    # Limit fps
-    dt = clock.tick(60)
-
-    # Draw screen
-    rendering.draw(screen, states)
 
     ##########################
 
@@ -123,3 +127,4 @@ while running:
 
 # Close
 pygame.quit()
+"""
