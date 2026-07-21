@@ -189,7 +189,8 @@ def undo(s):
         del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
         s.cursor_location[1] -= 1
         history_index += 1
+    if s.history[history_index][0] == "backspace":
+        pass
 
 def redo(s):
     pass
-    
