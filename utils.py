@@ -205,3 +205,7 @@ def take_inputs(s, event):
         editing.tab(s)
 
         s.changed = True
+
+def fix_camera_pos(s):
+    if s.cursor_location[0] * c.line_height > c.window_size[0] + r.get_y_offset():
+        print("will fix")

@@ -176,7 +176,7 @@ def paste_text(s):
     
     # Update cursor position
     s.cursor_location[0] = line_num - 1
-    s.cursor_location[1] = len(chars)
+    s.cursor_location[1] += len(chars)
 
     s.history.append(("paste_text", data))
 

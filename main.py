@@ -118,6 +118,9 @@ while running:
 
     ##########################
 
+    # Keep cursor on screen
+    utils.fix_camera_pos(states)
+
     # Update screen
     pygame.display.flip()
 
