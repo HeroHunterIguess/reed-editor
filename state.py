@@ -17,5 +17,5 @@ class editor_states:
     hold_time: int = 0
     waiting_for_initial: bool = False
     selecting: bool = False
-    selection_start: tuple = (0, 0)
-    selection_end: tuple = (0, 0)
+    selection_start: tuple = (-1, -1)
+    selection_end: tuple = (-1, -1)

@@ -1,7 +1,7 @@
 ### Editng functions ###
 
 
-import pyperclip
+import pyperclip, utils
 from config import c
 
 # Handle hitting enter for a new line
@@ -32,6 +32,17 @@ def new_line(s):
 def backspace(s, holding_ctrl):
     line_num = s.cursor_location[0]
     line = s.buffer[line_num]
+
+    if s.selecting:
+        start = min(s.selection_start[1], s.selection_end[1])
+        end = max(s.selection_start[1], s.selection_end[1])
+
+        if s.selection_start[0] == s.selection_end[0]:
+            del s.buffer[s.selection_start[0]][start : end]
+        
+        # End selection
+        utils.end_selection(s)
+        return
 
     # On first character (& not first line)
     # Runs even if you hit control backspace

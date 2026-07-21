@@ -52,6 +52,11 @@ def copy_all(buffer):
 
     pyperclip.copy(text)
 
+def end_selection(s):
+    s.selecting = False
+    s.selection_start = (-1, -1)
+    s.selection_end = (-1, -1)
+
 # Take in lots of info from main.py and process inputs
 def take_inputs(s, event):
 
@@ -95,23 +100,41 @@ def take_inputs(s, event):
         if not holding_shift:
             cursor_movement.move_left(s, step)
         else:
-            r.alter_x_offset(True, c.view_move_amount)
+            if not holding_ctrl:
+                r.alter_x_offset(True, c.view_move_amount)
 
-            if r.get_x_offset() <= 0:
-                r.set_x_offset(0)
+                if r.get_x_offset() <= 0:
+                    r.set_x_offset(0)
+            else:
+                # Select text
+                s.selecting = True
+                if s.selection_start == (-1, -1): # (-1,-1) is no selection
+                    s.selection_start = s.cursor_location.copy()
+                cursor_movement.move_left(s, 1)
+                s.selection_end = s.cursor_location.copy()
+                print(s.selection_start, s.selection_end)
 
     elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
             cursor_movement.move_right(s, step)
         else:
-            r.alter_x_offset(False, c.view_move_amount)
-            if r.get_x_offset() >= (char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0]:
-                r.set_x_offset((char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0])
+            if not holding_ctrl:
+                r.alter_x_offset(False, c.view_move_amount)
+                if r.get_x_offset() >= (char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0]:
+                    r.set_x_offset((char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0])
 
-                if r.get_x_offset() <= 0:
-                    r.set_x_offset(0)
-    
+                    if r.get_x_offset() <= 0:
+                        r.set_x_offset(0)
+            else:
+                # Select text
+                s.selecting = True
+                if s.selection_start == (-1, -1): # (-1,-1) is no selection
+                    s.selection_start = s.cursor_location.copy()
+                cursor_movement.move_right(s, 1)
+                s.selection_end = s.cursor_location.copy()
+                print(s.selection_start, s.selection_end)
+        
     elif event.key == pygame.K_DOWN:
         if not holding_shift:
             cursor_movement.move_down(s, step)

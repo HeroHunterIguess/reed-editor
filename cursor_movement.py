@@ -17,7 +17,7 @@ def make_cursor_pos_valid(s):
     if s.cursor_location[1] < 0:
         s.cursor_location[1] = 0
 
-
+# Move cursor to the left
 def move_left(s, step):
     if s.cursor_location[1] == 0 and s.cursor_location[0] != 0:
         s.cursor_location[0] -= 1
@@ -28,6 +28,7 @@ def move_left(s, step):
         s.last_y = s.cursor_location[1]
         make_cursor_pos_valid(s)
 
+# Move cursor to the right
 def move_right(s, step):
     if s.cursor_location[1] == len(s.buffer[s.cursor_location[0]]) and s.cursor_location[0] < len(s.buffer) - 1:
         s.cursor_location[0] += 1
@@ -38,6 +39,7 @@ def move_right(s, step):
         s.last_y = s.cursor_location[1]
         make_cursor_pos_valid(s)
 
+# Move cursor down
 def move_down(s, step):
     s.cursor_location[0] += step
     s.cursor_location[1] = s.last_y
@@ -48,6 +50,7 @@ def move_down(s, step):
 
     make_cursor_pos_valid(s)
 
+# Move cursor up
 def move_up(s, step):
     s.cursor_location[0] -= step
     s.cursor_location[1] = s.last_y
