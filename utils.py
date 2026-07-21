@@ -175,7 +175,7 @@ def take_inputs(s, event):
         s.changed = True
     
     # Insert character
-    elif event.unicode and event.key != pygame.K_TAB:
+    elif event.unicode and event.key != pygame.K_TAB and not holding_ctrl:
         editing.insert_character(s, event)
 
         s.changed = True
