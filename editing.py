@@ -181,7 +181,14 @@ def paste_text(s):
     s.history.append(("paste_text", data))
 
 def undo(s):
-    pass
+    history_index = len(s.history) - 1 - s.history_pos
+
+    print(history_index)
+    print(s.history)
+    if s.history[history_index][0] == "insert_character":
+        del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
+        s.cursor_location[1] -= 1
+        history_index += 1
 
 def redo(s):
     pass
