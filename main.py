@@ -68,6 +68,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
+        # resize window
+        #if event.type == pygame.VIDEORESIZE:
+        #    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+        #    c.window_size = (event.w, event.h)
+        
         # Clear held key
         if event.type == pygame.KEYUP:
             if states.held_event is not None and event.key == states.held_event.key:

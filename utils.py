@@ -1,7 +1,7 @@
 ### Util functions ###
 
 
-import pygame, pyperclip, editing, rendering as r
+import pygame, pyperclip, editing, cursor_movement, rendering as r
 from config import c
 
 char_width = 0
@@ -22,22 +22,6 @@ def read_file(filename):
         txt_file.close()
 
         return ""
-
-# Checks if the cursor is in a valid position in the buffer and if not fix it
-def make_cursor_pos_valid(s):
-    # Vertical checks
-    if s.cursor_location[0] < 0:
-        s.cursor_location[0] = 0
-    
-    if s.cursor_location[0] > len(s.buffer) - 1:
-        s.cursor_location[0] = len(s.buffer) - 1
-
-    # Horizontal checks
-    if s.cursor_location[1] > len(s.buffer[s.cursor_location[0]]):
-        s.cursor_location[1] = len(s.buffer[s.cursor_location[0]])
-    
-    if s.cursor_location[1] < 0:
-        s.cursor_location[1] = 0
 
 # Takes in buffer, turns it into standard txt format and writes it to the file
 def write_buffer(s):
@@ -109,30 +93,17 @@ def take_inputs(s, event):
     if event.key == pygame.K_LEFT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
-            if s.cursor_location[1] == 0 and s.cursor_location[0] != 0:
-                s.cursor_location[0] -= 1
-                s.cursor_location[1] = len(s.buffer[s.cursor_location[0]])
-            else:
-                s.cursor_location[1] -= step
-
-                s.last_y = s.cursor_location[1]
-                make_cursor_pos_valid(s)
+            cursor_movement.move_left(s, step)
         else:
             r.alter_x_offset(True, c.view_move_amount)
+
             if r.get_x_offset() <= 0:
                 r.set_x_offset(0)
 
     elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
-            if s.cursor_location[1] == len(s.buffer[s.cursor_location[0]]) and s.cursor_location[0] < len(s.buffer) - 1:
-                s.cursor_location[0] += 1
-                s.cursor_location[1] = 0
-            else: 
-                s.cursor_location[1] += step
-
-                s.last_y = s.cursor_location[1]
-                make_cursor_pos_valid(s)
+            cursor_movement.move_right(s, step)
         else:
             r.alter_x_offset(False, c.view_move_amount)
             if r.get_x_offset() >= (char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0]:
@@ -143,14 +114,7 @@ def take_inputs(s, event):
     
     elif event.key == pygame.K_DOWN:
         if not holding_shift:
-            s.cursor_location[0] += step
-            s.cursor_location[1] = s.last_y
-
-            # Move to end of line if at the last line
-            if s.cursor_location[0] == len(s.buffer):
-                s.cursor_location[1] = len(s.buffer[s.cursor_location[0] - 1])
-
-            make_cursor_pos_valid(s)
+            cursor_movement.move_down(s, step)
         else:
             r.alter_y_offset(False, c.view_move_amount)
             if r.get_y_offset() >= c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding:
@@ -161,14 +125,7 @@ def take_inputs(s, event):
     
     elif event.key == pygame.K_UP:
         if not holding_shift:
-            s.cursor_location[0] -= step
-            s.cursor_location[1] = s.last_y
-
-            make_cursor_pos_valid(s)
-
-            # Move to start of line if on first line
-            if s.cursor_location[0] <= 0:
-                s.cursor_location[1] = 0
+            cursor_movement.move_up(s, step)
         else:
             r.alter_y_offset(True, c.view_move_amount)
             if r.get_y_offset() <= 0:
@@ -212,3 +169,4 @@ def fix_camera_pos(s):
         r.alter_y_offset(False, c.line_height)
     elif s.cursor_location[0] * c.line_height - r.get_y_offset() < 0:
         r.alter_y_offset(True, c.line_height)
+ 
