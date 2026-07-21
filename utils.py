@@ -207,5 +207,8 @@ def take_inputs(s, event):
         s.changed = True
 
 def fix_camera_pos(s):
-    if s.cursor_location[0] * c.line_height > c.window_size[0] + r.get_y_offset():
-        print("will fix")
+    # If cursor moves -> move camera
+    if (s.cursor_location[0]+2) * c.line_height > c.window_size[1] + r.get_y_offset():
+        r.alter_y_offset(False, c.line_height)
+    elif s.cursor_location[0] * c.line_height - r.get_y_offset() < 0:
+        r.alter_y_offset(True, c.line_height)
