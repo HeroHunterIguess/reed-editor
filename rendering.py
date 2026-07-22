@@ -51,11 +51,36 @@ def get_y_offset():
     return y_offset
 
 
+def draw_selection(screen, s):
+    height = c.line_height
+
+    # Normalize start & end 
+    start = tuple(s.selection_start)
+    end = tuple(s.selection_end)
+
+    if start > end:
+        start, end = end, start
+
+    # If selection is on one line
+    if start[0] == end[0]:
+        x = start[1] * char_width + x_offset
+        y = int(start[0] * c.line_height - (c.line_height / 2) + y_offset)
+
+        width = (end[1] - start[1]) * char_width
+
+        pygame.draw.rect(screen, c.highlight_color, (x, y, width, height))
+        print(x,y,width,height)
+
+
 # Draw everything in the window
 def draw(screen, s): # s = states (shortened because of already long lines here) 
 
     # Set background
     screen.fill(c.background_color)
+
+    # Highlight selected area
+    if s.selecting:
+        draw_selection(screen, s)
 
     # Find visible lines
     start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)

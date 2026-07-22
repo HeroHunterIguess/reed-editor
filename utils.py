@@ -178,6 +178,8 @@ def take_inputs(s, event):
     elif event.unicode and event.key != pygame.K_TAB and not holding_ctrl:
         editing.insert_character(s, event)
 
+        s.last_y = s.cursor_location[1]
+
         s.changed = True
     
     # Tab character 

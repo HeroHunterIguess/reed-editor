@@ -126,6 +126,8 @@ unsaved_alert_corner_padding = 11
 cursor_color = (255, 255, 255)
 large_step = 5 # Distance moved when holding control
 
+highlight_color = (176, 176, 176, 100)
+
 
 ####################
 ## Input settings ##
