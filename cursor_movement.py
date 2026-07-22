@@ -1,6 +1,8 @@
 ### Cursor movement ###
 
 
+import utils
+
 # Checks if the cursor is in a valid position in the buffer and if not fix it
 def make_cursor_pos_valid(s):
     # Vertical checks
@@ -18,7 +20,10 @@ def make_cursor_pos_valid(s):
         s.cursor_location[1] = 0
 
 # Move cursor to the left
-def move_left(s, step):
+def move_left(s, step, standard_movement):
+    if standard_movement:
+        utils.end_selection(s)
+
     if s.cursor_location[1] == 0 and s.cursor_location[0] != 0:
         s.cursor_location[0] -= 1
         s.cursor_location[1] = len(s.buffer[s.cursor_location[0]])
@@ -29,7 +34,10 @@ def move_left(s, step):
         make_cursor_pos_valid(s)
 
 # Move cursor to the right
-def move_right(s, step):
+def move_right(s, step, standard_movement):
+    if standard_movement:
+        utils.end_selection(s)
+
     if s.cursor_location[1] == len(s.buffer[s.cursor_location[0]]) and s.cursor_location[0] < len(s.buffer) - 1:
         s.cursor_location[0] += 1
         s.cursor_location[1] = 0
@@ -40,7 +48,10 @@ def move_right(s, step):
         make_cursor_pos_valid(s)
 
 # Move cursor down
-def move_down(s, step):
+def move_down(s, step, standard_movement):
+    if standard_movement:
+        utils.end_selection(s)
+
     s.cursor_location[0] += step
     s.cursor_location[1] = s.last_y
 
@@ -51,7 +62,10 @@ def move_down(s, step):
     make_cursor_pos_valid(s)
 
 # Move cursor up
-def move_up(s, step):
+def move_up(s, step, standard_movement):
+    if standard_movement:
+        utils.end_selection(s)
+
     s.cursor_location[0] -= step
     s.cursor_location[1] = s.last_y
 

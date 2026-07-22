@@ -50,6 +50,11 @@ def get_x_offset():
 def get_y_offset():
     return y_offset
 
+def highlight(screen, s, width, height, x, y):
+    highlight = pygame.Surface((width, height), pygame.SRCALPHA)
+    highlight.fill(c.highlight_color)
+
+    screen.blit(highlight, (x, y))
 
 def draw_selection(screen, s):
     height = c.line_height
@@ -63,13 +68,41 @@ def draw_selection(screen, s):
 
     # If selection is on one line
     if start[0] == end[0]:
-        x = start[1] * char_width + x_offset
-        y = int(start[0] * c.line_height - (c.line_height / 2) + y_offset)
-
+        x = start[1] * char_width + x_offset + c.line_number_width + c.padding_left
+        y = int((start[0]) * c.line_height + y_offset) + c.padding_top
         width = (end[1] - start[1]) * char_width
 
-        pygame.draw.rect(screen, c.highlight_color, (x, y, width, height))
-        print(x,y,width,height)
+        highlight(screen, s, width, height, x, y)
+    else:
+        # If selection is multiple lines
+        amount_of_lines = end[0] - start[0] + 1
+        current_line = start[0]
+
+        for i in range(amount_of_lines):
+            y = current_line * c.line_height + y_offset + c.padding_top
+
+            if current_line == start[0]:
+                x = start[1] * char_width + y_offset + c.padding_left + c.line_number_width
+                width = len(s.buffer[current_line][start[1] : ]) * char_width
+
+                highlight(screen, s, width, height, x, y)
+                print(x, y, width, height)
+            
+            elif current_line == end[0]:
+                x = x_offset + c.padding_left + c.line_number_width
+                width = len(s.buffer[end[0]][ : end[1]]) * char_width
+
+                highlight(screen, s, width, height, x, y)
+                print(x, y, width, height)
+            
+            else: # for all lines in between
+                x = x_offset + c.padding_left + c.line_number_width
+                width = len(s.buffer[current_line]) * char_width
+
+                highlight(screen, s, width, height, x, y)
+                print(x, y, width, height)
+            
+            current_line += 1
 
 
 # Draw everything in the window
@@ -78,16 +111,16 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Set background
     screen.fill(c.background_color)
 
-    # Highlight selected area
-    if s.selecting:
-        draw_selection(screen, s)
-
     # Find visible lines
     start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)
     end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
 
     # Highlight current line
     pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top - y_offset, c.window_size[0], c.line_height))
+
+    # Highlight selected area
+    if s.selecting:
+        draw_selection(screen, s)
 
     # Start text at the top of the screen (+ padding)
     y = c.padding_top + (start_index * c.line_height)

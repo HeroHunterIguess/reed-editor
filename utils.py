@@ -98,7 +98,7 @@ def take_inputs(s, event):
     if event.key == pygame.K_LEFT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
-            cursor_movement.move_left(s, step)
+            cursor_movement.move_left(s, step, True)
         else:
             if not holding_ctrl:
                 r.alter_x_offset(True, c.view_move_amount)
@@ -110,14 +110,14 @@ def take_inputs(s, event):
                 s.selecting = True
                 if s.selection_start == (-1, -1): # (-1,-1) is no selection
                     s.selection_start = s.cursor_location.copy()
-                cursor_movement.move_left(s, 1)
+                cursor_movement.move_left(s, 1, False)
                 s.selection_end = s.cursor_location.copy()
                 print(s.selection_start, s.selection_end)
 
     elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
-            cursor_movement.move_right(s, step)
+            cursor_movement.move_right(s, step, True)
         else:
             if not holding_ctrl:
                 r.alter_x_offset(False, c.view_move_amount)
@@ -131,13 +131,13 @@ def take_inputs(s, event):
                 s.selecting = True
                 if s.selection_start == (-1, -1): # (-1,-1) is no selection
                     s.selection_start = s.cursor_location.copy()
-                cursor_movement.move_right(s, 1)
+                cursor_movement.move_right(s, 1, False)
                 s.selection_end = s.cursor_location.copy()
                 print(s.selection_start, s.selection_end)
         
     elif event.key == pygame.K_DOWN:
         if not holding_shift:
-            cursor_movement.move_down(s, step)
+            cursor_movement.move_down(s, step, True)
         else:
             r.alter_y_offset(False, c.view_move_amount)
             if r.get_y_offset() >= c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding:
@@ -148,7 +148,7 @@ def take_inputs(s, event):
     
     elif event.key == pygame.K_UP:
         if not holding_shift:
-            cursor_movement.move_up(s, step)
+            cursor_movement.move_up(s, step, True)
         else:
             r.alter_y_offset(True, c.view_move_amount)
             if r.get_y_offset() <= 0:
