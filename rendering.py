@@ -50,11 +50,11 @@ def get_x_offset():
 def get_y_offset():
     return y_offset
 
-def highlight(screen, s, width, height, x, y):
+def highlight(screen, width, height, x, y):
     highlight = pygame.Surface((width, height), pygame.SRCALPHA)
     highlight.fill(c.highlight_color)
 
-    screen.blit(highlight, (x, y))
+    screen.blit(highlight, (x + x_offset, y + y_offset))
 
 def draw_selection(screen, s):
     height = c.line_height
@@ -68,38 +68,38 @@ def draw_selection(screen, s):
 
     # If selection is on one line
     if start[0] == end[0]:
-        x = start[1] * char_width + x_offset + c.line_number_width + c.padding_left
-        y = int((start[0]) * c.line_height + y_offset) + c.padding_top
+        x = start[1] * char_width + c.line_number_width + c.padding_left
+        y = (start[0]) * c.line_height + c.padding_top
         width = (end[1] - start[1]) * char_width
 
-        highlight(screen, s, width, height, x, y)
+        highlight(screen, width, height, x, y)
     else:
         # If selection is multiple lines
         amount_of_lines = end[0] - start[0] + 1
         current_line = start[0]
 
         for i in range(amount_of_lines):
-            y = current_line * c.line_height + y_offset + c.padding_top
+            y = current_line * c.line_height + c.padding_top
 
             if current_line == start[0]:
-                x = start[1] * char_width + y_offset + c.padding_left + c.line_number_width
+                x = start[1] * char_width + c.padding_left + c.line_number_width
                 width = len(s.buffer[current_line][start[1] : ]) * char_width
 
-                highlight(screen, s, width, height, x, y)
+                highlight(screen, width, height, x, y)
                 print(x, y, width, height)
             
             elif current_line == end[0]:
-                x = x_offset + c.padding_left + c.line_number_width
-                width = len(s.buffer[end[0]][ : end[1]]) * char_width
+                x = c.padding_left + c.line_number_width
+                width = end[1] * char_width
 
-                highlight(screen, s, width, height, x, y)
+                highlight(screen, width, height, x, y)
                 print(x, y, width, height)
             
             else: # for all lines in between
-                x = x_offset + c.padding_left + c.line_number_width
+                x = c.padding_left + c.line_number_width
                 width = len(s.buffer[current_line]) * char_width
 
-                highlight(screen, s, width, height, x, y)
+                highlight(screen, width, height, x, y)
                 print(x, y, width, height)
             
             current_line += 1
