@@ -92,6 +92,12 @@ while running:
             elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.copy_text(states)
             
+            # Ctrl+x to copy then backspace
+            elif event.key == pygame.K_x and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                utils.copy_text(states)
+                editing.delete_selection(states)
+
+            # Allow ctrl+v to paste
             elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 editing.paste_text(states)
             
