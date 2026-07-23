@@ -88,9 +88,9 @@ while running:
                 # Update unsaved alert to be gone
                 states.changed = False
             
-            # Allow ctrl+c to copy entire file 
+            # Allow ctrl+c to copy text file 
             elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                utils.copy_all(states.buffer)
+                utils.copy_text(states)
             
             elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 editing.paste_text(states)

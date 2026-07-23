@@ -39,18 +39,53 @@ def write_buffer(s):
         # Write data
         txt_file.write(data)
 
-# Copy all text in the buffer
-def copy_all(buffer):
+# Copy text from buffer or selection
+def copy_text(s):
     lines = []
-    # Turn buffer into standard text
-    for line_chars in buffer:
-        line = "".join(line_chars)
 
-        lines.append(line)
+    # Copy whole file
+    if not s.selecting:
+        # Turn buffer into standard text
+        for line_chars in s.buffer:
+            line = "".join(line_chars)
 
-    text = "\n".join(lines)
+            lines.append(line)
 
-    pyperclip.copy(text)
+        text = "\n".join(lines)
+
+        pyperclip.copy(text)
+    
+    # Copy selection
+    else:
+        # Normalize
+        start = tuple(s.selection_start)
+        end = tuple(s.selection_end)
+
+        if start > end:
+            start, end = end, start
+
+        # Single line 
+        if start[0] == end[0]:
+            line = "".join(s.buffer[start[0]][start[1] : end[1]])
+            lines.append(line)
+
+            # Copy
+            pyperclip.copy("\n".join(lines))
+        
+        # Multiline
+        else:
+            # First line
+            lines.append("".join(s.buffer[start[0]][start[1] : ]))
+
+            # Middle lines
+            for line_num in range(start[0] + 1, end[0]):
+                lines.append("".join(s.buffer[line_num]))
+
+            # Last line
+            lines.append("".join(s.buffer[end[0]][ : end[1]]))
+        
+            # Copy
+            pyperclip.copy("\n".join(lines))
 
 def end_selection(s):
     s.selecting = False
