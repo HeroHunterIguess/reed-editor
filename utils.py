@@ -57,6 +57,20 @@ def end_selection(s):
     s.selection_start = (-1, -1)
     s.selection_end = (-1, -1)
 
+def selection(s, dir):
+    s.selecting = True
+    if s.selection_start == (-1, -1): # (-1,-1) is no selection
+        s.selection_start = s.cursor_location.copy()
+    if dir == "right":
+        cursor_movement.move_right(s, 1, False)
+    elif dir == "left":
+        cursor_movement.move_left(s, 1, False)
+    elif dir == "down":
+        cursor_movement.move_down(s, 1, False)
+    elif dir == "up":
+        cursor_movement.move_up(s, 1, False)
+    s.selection_end = s.cursor_location.copy()
+
 # Take in lots of info from main.py and process inputs
 def take_inputs(s, event):
 
@@ -107,12 +121,7 @@ def take_inputs(s, event):
                     r.set_x_offset(0)
             else:
                 # Select text
-                s.selecting = True
-                if s.selection_start == (-1, -1): # (-1,-1) is no selection
-                    s.selection_start = s.cursor_location.copy()
-                cursor_movement.move_left(s, 1, False)
-                s.selection_end = s.cursor_location.copy()
-                print(s.selection_start, s.selection_end)
+                selection(s, "left")
 
     elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
@@ -128,32 +137,35 @@ def take_inputs(s, event):
                         r.set_x_offset(0)
             else:
                 # Select text
-                s.selecting = True
-                if s.selection_start == (-1, -1): # (-1,-1) is no selection
-                    s.selection_start = s.cursor_location.copy()
-                cursor_movement.move_right(s, 1, False)
-                s.selection_end = s.cursor_location.copy()
-                print(s.selection_start, s.selection_end)
+                selection(s, "right")
         
     elif event.key == pygame.K_DOWN:
         if not holding_shift:
             cursor_movement.move_down(s, step, True)
         else:
-            r.alter_y_offset(False, c.view_move_amount)
-            if r.get_y_offset() >= c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding:
-                r.set_y_offset(c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding)
-                # Limit offset to 0
-                if r.get_y_offset() < 0:
-                    r.set_y_offset(0)
-    
+            if not holding_ctrl:
+                r.alter_y_offset(False, c.view_move_amount)
+                if r.get_y_offset() >= c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding:
+                    r.set_y_offset(c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding)
+                    # Limit offset to 0
+                    if r.get_y_offset() < 0:
+                        r.set_y_offset(0)
+            else:
+                # Select text
+                selection(s, "down")
+        
     elif event.key == pygame.K_UP:
         if not holding_shift:
             cursor_movement.move_up(s, step, True)
         else:
-            r.alter_y_offset(True, c.view_move_amount)
-            if r.get_y_offset() <= 0:
-                r.set_y_offset(0)
-                
+            if not holding_ctrl:
+                r.alter_y_offset(True, c.view_move_amount)
+                if r.get_y_offset() <= 0:
+                    r.set_y_offset(0)
+            else:
+                # Select text
+                selection(s, "up")
+
     ##########################
 
     # Allow backspace to delete characters
