@@ -28,20 +28,39 @@ def new_line(s):
 
     s.history.append(("new_line", None))
 
+# Delete all text in a selection
+def delete_selection(s):
+    start = tuple(s.selection_start)
+    end = tuple(s.selection_end)
+
+    if start > end:
+        start, end = end, start
+
+    # Delete single line selection
+    if start[0] == end[0]:
+        del s.buffer[start[0]][start[1] : end[1]]
+    # Delete multi-line selection
+    else:
+        first = s.buffer[start[0]][ : start[1]]
+        last = s.buffer[end[0]][end[1] : ]
+
+        s.buffer[start[0]] = first + last
+
+        del s.buffer[start[0] + 1 : end[0] + 1]
+    
+    # Fix cursor pos
+    s.cursor_location = list(start)
+
+    # End selection
+    utils.end_selection(s)
+
 # Handle backspacing cases
 def backspace(s, holding_ctrl):
     line_num = s.cursor_location[0]
     line = s.buffer[line_num]
 
     if s.selecting:
-        start = min(s.selection_start[1], s.selection_end[1])
-        end = max(s.selection_start[1], s.selection_end[1])
-
-        if s.selection_start[0] == s.selection_end[0]:
-            del s.buffer[s.selection_start[0]][start : end]
-        
-        # End selection
-        utils.end_selection(s)
+        delete_selection(s)
         return
 
     # On first character (& not first line)
@@ -98,6 +117,11 @@ def backspace(s, holding_ctrl):
 
 # Handle hitting delete key 
 def delete(s, holding_ctrl):
+
+    if s.selecting:
+        delete_selection(s)
+        return
+
     line_num = s.cursor_location[0]
     line = s.buffer[line_num]
 
@@ -146,6 +170,10 @@ def delete(s, holding_ctrl):
 
 # Insert given unicode character
 def insert_character(s, event):
+
+    if s.selecting:
+        delete_selection(s)
+
     s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], event.unicode)
     s.cursor_location[1] += 1
 
@@ -153,6 +181,10 @@ def insert_character(s, event):
 
 # Insert tab spaces
 def tab(s):
+
+    if s.selecting:
+        delete_selection(s)
+    
     for i in range(c.tab_spaces):   
 
         s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], " ")
@@ -162,6 +194,10 @@ def tab(s):
 
 # Paste text from users clipboard
 def paste_text(s):
+
+    if s.selecting:
+        delete_selection(s)
+
     data = pyperclip.paste().splitlines()
     line_num = s.cursor_location[0]
     chars = []
