@@ -102,6 +102,10 @@ def draw_selection(screen, s):
                 highlight(screen, width, height, x, y)
                 print(x, y, width, height)
             
+            # Add single space highlight if line is empty
+            if len(s.buffer[current_line]) == 0:
+                highlight(screen, char_width, c.line_height, c.padding_left + c.line_number_width, y)
+            
             current_line += 1
 
 
