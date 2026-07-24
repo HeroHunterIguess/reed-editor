@@ -54,7 +54,7 @@ def highlight(screen, width, height, x, y):
     highlight = pygame.Surface((width, height), pygame.SRCALPHA)
     highlight.fill(c.highlight_color)
 
-    screen.blit(highlight, (x + x_offset, y + y_offset))
+    screen.blit(highlight, (x - x_offset, y - y_offset))
 
 def draw_selection(screen, s):
     height = c.line_height
@@ -86,21 +86,18 @@ def draw_selection(screen, s):
                 width = len(s.buffer[current_line][start[1] : ]) * char_width
 
                 highlight(screen, width, height, x, y)
-                print(x, y, width, height)
             
             elif current_line == end[0]:
                 x = c.padding_left + c.line_number_width
                 width = end[1] * char_width
 
                 highlight(screen, width, height, x, y)
-                print(x, y, width, height)
             
             else: # for all lines in between
                 x = c.padding_left + c.line_number_width
                 width = len(s.buffer[current_line]) * char_width
 
                 highlight(screen, width, height, x, y)
-                print(x, y, width, height)
             
             # Add single space highlight if line is empty
             if len(s.buffer[current_line]) == 0:

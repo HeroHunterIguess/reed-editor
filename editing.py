@@ -26,7 +26,7 @@ def new_line(s):
     s.cursor_location[0] += 1
     s.cursor_location[1] = 0
 
-    s.history.append(("new_line", None))
+    s.history.append({"action": "new_line"})
 
 # Delete all text in a selection
 def delete_selection(s):
@@ -61,6 +61,9 @@ def backspace(s, holding_ctrl):
 
     if s.selecting:
         delete_selection(s)
+        s.history.append({"action": "delete_selection", 
+                          "data": [],
+                          "multiline": False})
         return
 
     # On first character (& not first line)
@@ -104,7 +107,7 @@ def backspace(s, holding_ctrl):
         # Iterate through looking for word
         if not deleted_spaces:
             for char in reversed(line[ : s.cursor_location[1]]):
-                if char != " ":
+                if char != " " and char != "." and char != "(" and char != ")":
                     count += 1
                 else:
                     break
@@ -112,8 +115,6 @@ def backspace(s, holding_ctrl):
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
         s.cursor_location[1] -= count
-    
-    s.history.append(("backspace", holding_ctrl))
 
 # Handle hitting delete key 
 def delete(s, holding_ctrl):
@@ -165,8 +166,6 @@ def delete(s, holding_ctrl):
 
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
-    
-    s.history.append(("delete", holding_ctrl))
 
 # Insert given unicode character
 def insert_character(s, event):
