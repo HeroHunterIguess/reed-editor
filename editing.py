@@ -35,6 +35,8 @@ def delete_selection(s):
 
     if start > end:
         start, end = end, start
+    
+    selection_data = utils.get_selection(s)
 
     # Delete single line selection
     if start[0] == end[0]:
@@ -54,16 +56,17 @@ def delete_selection(s):
     # End selection
     utils.end_selection(s)
 
+    return selection_data
+
 # Handle backspacing cases
 def backspace(s, holding_ctrl):
     line_num = s.cursor_location[0]
     line = s.buffer[line_num]
 
     if s.selecting:
-        delete_selection(s)
+        data = delete_selection(s)
         s.history.append({"action": "delete_selection", 
-                          "data": [],
-                          "multiline": False})
+                          "data": data})
         return
 
     # On first character (& not first line)
@@ -121,6 +124,8 @@ def delete(s, holding_ctrl):
 
     if s.selecting:
         delete_selection(s)
+        s.history.append({"action": "delete_selection", 
+                    "data": data})
         return
 
     line_num = s.cursor_location[0]
