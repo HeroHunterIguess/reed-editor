@@ -65,7 +65,8 @@ def backspace(s, holding_ctrl):
 
     if s.selecting:
         data = delete_selection(s)
-        s.history.append({"action": "delete_selection", 
+        s.history.append({"action": "backspace", 
+                          "type": "selection",
                           "data": data})
         return
 
@@ -82,8 +83,9 @@ def backspace(s, holding_ctrl):
         s.buffer.pop(line_num)
         line_num -= 1
 
-        s.history.append({"action": "delete_line", 
-                          "data": cursor_location})
+        s.history.append({"action": "backspace",
+                          "type": "line", 
+                          "data": s.cursor_location})
 
         # Fix cursor placement
         s.cursor_location[0] -= 1
@@ -91,10 +93,10 @@ def backspace(s, holding_ctrl):
     
     # In a normal case delete 1 character
     elif s.cursor_location[1] != 0:
-        char = s.buffer[line_num][s.cursor_location[1] - 1]
-        s.history.append({"action": "delete_char", 
-                          "data": char})
-        del char
+        s.history.append({"action": "backspace",
+                          "type": "char",
+                          "data": s.buffer[line_num][s.cursor_location[1] - 1]})
+        del s.buffer[line_num][s.cursor_location[1] - 1]
         s.cursor_location[1] -= 1
     
     ##########################
@@ -123,7 +125,8 @@ def backspace(s, holding_ctrl):
 
         # Delete word and update buffer & cursor pos
         word = s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
-        s.history.append({"action": "delete_char", 
+        s.history.append({"action": "backspace", 
+                          "type": "char",
                           "data": word})
         del word
         s.cursor_location[1] -= count
@@ -132,9 +135,10 @@ def backspace(s, holding_ctrl):
 def delete(s, holding_ctrl):
 
     if s.selecting:
-        delete_selection(s)
-        s.history.append({"action": "delete_selection", 
-                    "data": data})
+        data = delete_selection(s)
+        s.history.append({"action": "delete",
+                          "type": "selection",
+                          "data": data})
         return
 
     line_num = s.cursor_location[0]
@@ -144,15 +148,22 @@ def delete(s, holding_ctrl):
     # Runs even if you hit control delete
     if s.cursor_location[1] == len(line) and line_num < len(s.buffer) - 1: 
         
-        # Move characters from previous line
+        # Move characters from next line
         s.buffer[line_num].extend(s.buffer[line_num + 1])
 
         # Remove next line
         s.buffer.pop(line_num + 1)
+
+        s.history.append({"action": "delete",
+                          "type": "line",
+                          "data": s.cursor_location})
     
     # In a normal case delete 1 character
     elif s.cursor_location[1] < len(s.buffer[s.cursor_location[0]]):
-        del s.buffer[line_num][s.cursor_location[1]]
+        s.history.append({"action": "delete",
+                          "type": "char",
+                          "data": s.buffer[line_num][s.cursor_location[1] - 1]})
+        del s.buffer[line_num][s.cursor_location[1] - 1]
     
     ##########################
 
@@ -180,6 +191,9 @@ def delete(s, holding_ctrl):
 
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
+        s.history.append({"action": "delete", 
+                          "type": "char",
+                          "data": word})
 
 # Insert given unicode character
 def insert_character(s, event):
@@ -190,7 +204,8 @@ def insert_character(s, event):
     s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], event.unicode)
     s.cursor_location[1] += 1
 
-    s.history.append(("insert_character", event.unicode))
+    s.history.append({"action": "insert_character", 
+                      "data": event.unicode})
 
 # Insert tab spaces
 def tab(s):
@@ -203,7 +218,7 @@ def tab(s):
         s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], " ")
         s.cursor_location[1] += 1
     
-    s.history.append(("tab", None))
+    s.history.append({"action": "tab"})
 
 # Paste text from users clipboard
 def paste_text(s):
@@ -238,18 +253,23 @@ def paste_text(s):
     s.cursor_location[0] = line_num - 1
     s.cursor_location[1] += len(chars)
 
-    s.history.append(("paste_text", data))
+    s.history.append({"action": "paste_text",
+                      "data": data})
 
 def undo(s):
     history_index = len(s.history) - 1 - s.history_pos
 
     print(history_index)
     print(s.history)
-    if s.history[history_index][0] == "insert_character":
+
+    # standard char insert
+    if s.history[history_index]["action"] == "insert_character":
         del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
         s.cursor_location[1] -= 1
         history_index += 1
-    if s.history[history_index][0] == "backspace":
+    
+    # all backspace actions
+    if s.history[history_index]["action"] == "backspace":
         pass
 
 def redo(s):

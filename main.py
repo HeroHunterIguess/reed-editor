@@ -49,7 +49,6 @@ states = state.editor_states(
 
 # Begin update/processing loop
 running = True
-
 while running:
 
     # Limit fps
