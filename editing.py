@@ -82,13 +82,19 @@ def backspace(s, holding_ctrl):
         s.buffer.pop(line_num)
         line_num -= 1
 
+        s.history.append({"action": "delete_line", 
+                          "data": cursor_location})
+
         # Fix cursor placement
         s.cursor_location[0] -= 1
         s.cursor_location[1] = previous_line_length
     
     # In a normal case delete 1 character
     elif s.cursor_location[1] != 0:
-        del s.buffer[line_num][s.cursor_location[1] - 1]
+        char = s.buffer[line_num][s.cursor_location[1] - 1]
+        s.history.append({"action": "delete_char", 
+                          "data": char})
+        del char
         s.cursor_location[1] -= 1
     
     ##########################
@@ -116,7 +122,10 @@ def backspace(s, holding_ctrl):
                     break
 
         # Delete word and update buffer & cursor pos
-        del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
+        word = s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
+        s.history.append({"action": "delete_char", 
+                          "data": word})
+        del word
         s.cursor_location[1] -= count
 
 # Handle hitting delete key 
