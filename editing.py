@@ -264,13 +264,15 @@ def undo(s):
 
     # standard char insert
     if s.history[history_index]["action"] == "insert_character":
-        del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
-        s.cursor_location[1] -= 1
+        #del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
+        #s.cursor_location[1] -= 1
+        backspace(s)
         history_index += 1
     
     # all backspace actions
     if s.history[history_index]["action"] == "backspace":
-        pass
+        if s.history[history_index]["type"] == "char":
+            pass
 
 def redo(s):
     pass
