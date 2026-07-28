@@ -1,7 +1,7 @@
 ### Editng functions ###
 
 
-import pyperclip, utils
+import pyperclip, utils, cursor_movement
 from config import c
 
 # Handle hitting enter for a new line
@@ -125,7 +125,7 @@ def backspace(s, holding_ctrl):
 
         # Delete word and update buffer & cursor pos
         s.history.append({"action": "backspace", 
-                          "type": "char",
+                          "type": "word",
                           "data": s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]})
         del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
         s.cursor_location[1] -= count
@@ -191,7 +191,7 @@ def delete(s, holding_ctrl):
         # Delete word and update buffer & cursor pos
         del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
         s.history.append({"action": "delete", 
-                          "type": "char",
+                          "type": "word",
                           "data": s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]})
 
 # Insert given unicode character
@@ -261,27 +261,47 @@ def undo(s):
 
     if history_index < 0:
         return
+    
+    print(s.history)
 
     # standard char insert
     if s.history[history_index]["action"] == "insert_character":
         del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
 
         s.cursor_location[1] -= 1
-        s.history.pop(history_index)
-
-        history_index -= 1
     
     # all backspace actions
     elif s.history[history_index]["action"] == "backspace":
+        # adding back a character
         if s.history[history_index]["type"] == "char":
             s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index]["data"])
 
             s.cursor_location[1] += 1
-            s.history.pop(history_index)
 
-            history_index -= 1
+        # adding back a word
+        elif s.history[history_index]["type"] == "word":
+            for i in range(len(s.history[history_index]["data"])):
+                s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index]["data"][i])
+
+                s.cursor_location[1] += 1
+
+            # backspace removes one character then rest of word so restore that one character
+            s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
+            s.history.pop(history_index - 1)
+            
+            s.cursor_location[1] += 1
+
+        # adding back a line
+        elif s.history[history_index]["type"] == "line":
+            s.buffer.insert(s.cursor_location[0] + 1, [])
+
+            s.cursor_location[0] += 1
+            cursor_movement.make_cursor_pos_valid(s)
+    
+    history_index -= 1
+    s.history.pop(history_index)
 
 # Redo single action
-# Will not be implimented for now
+# Will not be implimented in the current version - it may come later
 def redo(s):
     pass
