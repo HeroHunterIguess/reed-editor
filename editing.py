@@ -124,11 +124,10 @@ def backspace(s, holding_ctrl):
                     break
 
         # Delete word and update buffer & cursor pos
-        word = s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
         s.history.append({"action": "backspace", 
                           "type": "char",
-                          "data": word})
-        del word
+                          "data": s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]})
+        del s.buffer[line_num][s.cursor_location[1] - count : s.cursor_location[1]]
         s.cursor_location[1] -= count
 
 # Handle hitting delete key 
@@ -162,8 +161,8 @@ def delete(s, holding_ctrl):
     elif s.cursor_location[1] < len(s.buffer[s.cursor_location[0]]):
         s.history.append({"action": "delete",
                           "type": "char",
-                          "data": s.buffer[line_num][s.cursor_location[1] - 1]})
-        del s.buffer[line_num][s.cursor_location[1] - 1]
+                          "data": s.buffer[line_num][s.cursor_location[1]]})
+        del s.buffer[line_num][s.cursor_location[1]]
     
     ##########################
 
@@ -193,7 +192,7 @@ def delete(s, holding_ctrl):
         del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
         s.history.append({"action": "delete", 
                           "type": "char",
-                          "data": word})
+                          "data": s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]})
 
 # Insert given unicode character
 def insert_character(s, event):
