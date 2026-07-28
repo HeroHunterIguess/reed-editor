@@ -1,3 +1,6 @@
+# Pyglet Port - THIS VERSION IS COMPLETELY BROKEN, AND NOT ACTIVELY WORKED ON.
+
+
 # Reed
 
 ![image](https://github.com/HeroHunterIguess/reed-editor/blob/main/images/showcase.png)
