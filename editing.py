@@ -255,23 +255,33 @@ def paste_text(s):
     s.history.append({"action": "paste_text",
                       "data": data})
 
+# Undo single action
 def undo(s):
-    history_index = len(s.history) - 1 - s.history_pos
+    history_index = len(s.history) - 1
 
-    print(history_index)
-    print(s.history)
+    if history_index < 0:
+        return
 
     # standard char insert
     if s.history[history_index]["action"] == "insert_character":
-        #del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
-        #s.cursor_location[1] -= 1
-        backspace(s)
-        history_index += 1
+        del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
+
+        s.cursor_location[1] -= 1
+        s.history.pop(history_index)
+
+        history_index -= 1
     
     # all backspace actions
-    if s.history[history_index]["action"] == "backspace":
+    elif s.history[history_index]["action"] == "backspace":
         if s.history[history_index]["type"] == "char":
-            pass
+            s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index]["data"])
 
+            s.cursor_location[1] += 1
+            s.history.pop(history_index)
+
+            history_index -= 1
+
+# Redo single action
+# Will not be implimented for now
 def redo(s):
     pass
