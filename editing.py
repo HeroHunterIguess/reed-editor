@@ -262,6 +262,12 @@ def undo(s):
     if history_index < 0:
         return
     
+    # If data is empty then no real action was taken so delete it and exit
+    if s.history[history_index]["action"] != "tab" and s.history[history_index]["action"] != "new_line" # Types with no data
+        if s.history[history_index]["data"] == []:
+            s.history.pop(history_index)
+            return
+    
     print(s.history)
 
     # Standard character insert
@@ -316,11 +322,11 @@ def undo(s):
             if s.history[history_index]["action"] == "backspace":
                 s.cursor_location[0] += 1
                 s.cursor_location[1] = 0
-
-            cursor_movement.make_cursor_pos_valid(s)
     
     history_index -= 1
     s.history.pop(history_index)
+
+    cursor_movement.make_cursor_pos_valid(s)
 
 # Redo single action
 # Will not be implimented in the current version - it may come later
