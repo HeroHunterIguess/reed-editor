@@ -288,14 +288,20 @@ def undo(s):
             # backspace removes one character then rest of word so restore that one character
             s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
             s.history.pop(history_index - 1)
-            
+
             s.cursor_location[1] += 1
 
         # adding back a line
         elif s.history[history_index]["type"] == "line":
-            s.buffer.insert(s.cursor_location[0] + 1, [])
+            cursor_history_location = s.history[history_index]["data"]
+            left = s.buffer[cursor_history_location[0]][cursor_history_location[1] : ]
+            right = s.buffer[cursor_history_location[0]][ : cursor_history_location[1]]
 
+            s.buffer[s.cursor_location[0]] = left
+            s.buffer.insert(s.cursor_location[0], right)
+ 
             s.cursor_location[0] += 1
+            s.cursor_location[1] = 0
             cursor_movement.make_cursor_pos_valid(s)
     
     history_index -= 1
