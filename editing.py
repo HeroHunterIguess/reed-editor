@@ -189,10 +189,10 @@ def delete(s, holding_ctrl):
                     break
 
         # Delete word and update buffer & cursor pos
-        del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
         s.history.append({"action": "delete", 
                           "type": "word",
                           "data": s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]})
+        del s.buffer[line_num][s.cursor_location[1] : s.cursor_location[1] + count]
 
 # Insert given unicode character
 def insert_character(s, event):
@@ -264,34 +264,47 @@ def undo(s):
     
     print(s.history)
 
-    # standard char insert
+    # Standard character insert
     if s.history[history_index]["action"] == "insert_character":
         del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
 
         s.cursor_location[1] -= 1
     
-    # all backspace actions
-    elif s.history[history_index]["action"] == "backspace":
-        # adding back a character
+    # All backspace/delete actions
+    elif s.history[history_index]["action"] == "backspace" or s.history[history_index]["action"] == "delete":
+        # Adding back a character
         if s.history[history_index]["type"] == "char":
             s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index]["data"])
 
+            # Only move cursor if it was with backspace
+            if s.history[history_index]["action"] == "backspace":
+                s.cursor_location[1] += 1
+
+        # Adding back a word
+        elif s.history[history_index]["type"] == "word":
+            # Add first delete back
+            if s.history[history_index]["action"] == "delete":
+                s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
+
             s.cursor_location[1] += 1
 
-        # adding back a word
-        elif s.history[history_index]["type"] == "word":
+            # Loop through adding characters back
             for i in range(len(s.history[history_index]["data"])):
                 s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index]["data"][i])
 
                 s.cursor_location[1] += 1
 
-            # backspace removes one character then rest of word so restore that one character
-            s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
+            # Backspace removes one character then rest of word so restore that one character
+            if s.history[history_index]["action"] == "backspace":
+                s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
+                s.cursor_location[1] += 1
+            
+            if s.history[history_index]["action"] == "delete":
+                s.cursor_location[1] -= len(s.history[history_index]["data"]) + 1
+            
             s.history.pop(history_index - 1)
 
-            s.cursor_location[1] += 1
-
-        # adding back a line
+        # Adding back a line
         elif s.history[history_index]["type"] == "line":
             cursor_history_location = s.history[history_index]["data"]
             left = s.buffer[cursor_history_location[0]][cursor_history_location[1] : ]
@@ -300,8 +313,10 @@ def undo(s):
             s.buffer[s.cursor_location[0]] = left
             s.buffer.insert(s.cursor_location[0], right)
  
-            s.cursor_location[0] += 1
-            s.cursor_location[1] = 0
+            if s.history[history_index]["action"] == "backspace":
+                s.cursor_location[0] += 1
+                s.cursor_location[1] = 0
+
             cursor_movement.make_cursor_pos_valid(s)
     
     history_index -= 1
