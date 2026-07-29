@@ -108,6 +108,8 @@ context_info_size = 17 # (text size)
 context_info_padding = 2
 context_background_padding_bottom = 2
 
+max_filename_length = 86 # Length of the filename before its truncated
+
 
 ###############################
 ## Unsaved changes indicator ##
