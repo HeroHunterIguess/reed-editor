@@ -254,5 +254,9 @@ def fix_camera_pos(s):
         r.set_y_offset(c.line_height * s.cursor_location[0])
  
     # Fix horizontal position
-    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width > c.window_size[0]:
-        print(":ah:")
+
+    # is this if statement stupid or okay? i really dont know
+    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width - r.get_x_offset() > c.window_size[0]:
+        r.set_x_offset(s.cursor_location[1] * char_width + c.padding_left + c.line_number_width - c.window_size[0])
+    if s.cursor_location[1] * char_width < r.get_x_offset():
+        r.set_x_offset(s.cursor_location[1] * char_width)
