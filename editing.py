@@ -263,12 +263,12 @@ def undo(s):
         return
     
     # If data is empty then no real action was taken so delete it and exit
-    if s.history[history_index]["action"] != "tab" and s.history[history_index]["action"] != "new_line" # Types with no data
-        if s.history[history_index]["data"] == []:
-            s.history.pop(history_index)
-            return
+    #if s.history[history_index]["action"] != "tab" and s.history[history_index]["action"] != "new_line": # Types with no data
+    if s.history[history_index]["data"] == []:
+        s.history.pop(history_index)
+        return
     
-    print(s.history)
+    print(s.history[history_index])
 
     # Standard character insert
     if s.history[history_index]["action"] == "insert_character":
@@ -289,10 +289,11 @@ def undo(s):
         # Adding back a word
         elif s.history[history_index]["type"] == "word":
             # Add first delete back
+            # BROKEN RN THIS CAN BE A LIST WHILE THIS CODE ASSUMES ITS A STRING
             if s.history[history_index]["action"] == "delete":
                 s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
 
-            s.cursor_location[1] += 1
+                s.cursor_location[1] += 1
 
             # Loop through adding characters back
             for i in range(len(s.history[history_index]["data"])):
@@ -301,6 +302,7 @@ def undo(s):
                 s.cursor_location[1] += 1
 
             # Backspace removes one character then rest of word so restore that one character
+            # BROKEN RN THIS CAN BE A LIST WHILE THIS CODE ASSUMES ITS A STRING
             if s.history[history_index]["action"] == "backspace":
                 s.buffer[s.cursor_location[0]].insert(s.cursor_location[1], s.history[history_index - 1]["data"])
                 s.cursor_location[1] += 1

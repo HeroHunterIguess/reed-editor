@@ -69,6 +69,10 @@ import os # This only exists to choose defaults based on OS
 background_color = (35, 35, 41)
 window_size = (1000, 650)
 
+# If this has a filepath, it will attempt to load an image in that path
+# Leave it as "" if you do not want a background image
+background_image_location = "" # EX: "/home/username/.config/reed/image.png"
+
 
 ###################
 ## Text settings ##

@@ -105,6 +105,14 @@ def draw_selection(screen, s):
             
             current_line += 1
 
+# IMAGE
+if c.background_image_location != "":
+    image = pygame.image.load(c.background_image_location)
+    imagerect = image.get_rect()
+    has_image = True
+else:
+    has_image = False
+
 
 # Draw everything in the window
 def draw(screen, s): # s = states (shortened because of already long lines here) 
@@ -112,6 +120,10 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Set background
     screen.fill(c.background_color)
 
+    # Draw background image if one is set
+    if has_image:
+        screen.blit(image, imagerect)
+        
     # Find visible lines
     start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)
     end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
