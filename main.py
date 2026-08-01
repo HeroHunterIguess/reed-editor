@@ -33,7 +33,7 @@ if not buffer:
     buffer = [[]]
 
 # Initialize states w/ all requires editor states
-# Throughout the program states is commonly referred to as s
+# States is commonly referred to as s throughout
 states = state.editor_states(
     buffer = buffer,
     cursor_location = [0, 0],
@@ -91,13 +91,12 @@ while running:
             elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 editing.paste_text(states)
             
-            # All initial inputs
+            # All initial inputs/setup before repeat
             else:
                 states.hold_time = 0
                 states.held_event = event
                 states.waiting_for_initial = True
 
-                # Initial move
                 utils.take_inputs(states, event)
             
     ##########################
