@@ -158,57 +158,30 @@ def take_inputs(s, event):
         if not holding_shift:
             cursor_movement.move_left(s, step, True)
         else:
-            if not holding_ctrl:
-                r.alter_x_offset(True, c.view_move_amount)
-
-                if r.get_x_offset() <= 0:
-                    r.set_x_offset(0)
-            else:
-                # Select text
-                selection(s, "left")
+            # Select text
+            selection(s, "left")
 
     elif event.key == pygame.K_RIGHT:
         # Check if its moving lines or moving on one line
         if not holding_shift:
             cursor_movement.move_right(s, step, True)
         else:
-            if not holding_ctrl:
-                r.alter_x_offset(False, c.view_move_amount)
-                if r.get_x_offset() >= (char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0]:
-                    r.set_x_offset((char_width * len(s.buffer[s.cursor_location[0]]) + c.view_padding) - c.window_size[0])
-
-                    if r.get_x_offset() <= 0:
-                        r.set_x_offset(0)
-            else:
-                # Select text
-                selection(s, "right")
+            # Select text
+            selection(s, "right")
         
     elif event.key == pygame.K_DOWN:
         if not holding_shift:
             cursor_movement.move_down(s, step, True)
         else:
-            if not holding_ctrl:
-                r.alter_y_offset(False, c.view_move_amount)
-                if r.get_y_offset() >= c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding:
-                    r.set_y_offset(c.line_height * len(s.buffer) - c.window_size[1] + c.view_padding)
-                    # Limit offset to 0
-                    if r.get_y_offset() < 0:
-                        r.set_y_offset(0)
-            else:
-                # Select text
-                selection(s, "down")
+            # Select text
+            selection(s, "down")
         
     elif event.key == pygame.K_UP:
         if not holding_shift:
             cursor_movement.move_up(s, step, True)
         else:
-            if not holding_ctrl:
-                r.alter_y_offset(True, c.view_move_amount)
-                if r.get_y_offset() <= 0:
-                    r.set_y_offset(0)
-            else:
-                # Select text
-                selection(s, "up")
+            # Select text
+            selection(s, "up")
 
     ##########################
 
