@@ -181,4 +181,16 @@ tab_spaces = 4
 
 # Set this to the background color if you want to disable highlighting
 current_line_highlight_color = (53, 50, 64)
+
+
+# Default file if reed is opened without a specific file
+
+# Default is selected based on the operating system
+# You can replace this simply with default_filepath = ""
+
+if os.name == "posix":
+    default_filepath = "/home/herohunter/reed_default.txt" 
+elif os.name == "nt":
+    default_filepath = os.path.join(os.path.expanduser("~"), "reed_default.txt") # Windows path hasnt been tested
+
 """
