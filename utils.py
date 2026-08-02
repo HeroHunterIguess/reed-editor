@@ -52,6 +52,7 @@ def get_selection(s):
     # Single line 
     if start[0] == end[0]:
         line = s.buffer[start[0]][start[1] : end[1]]
+
         lines.append(line)
 
         # Copy
@@ -69,7 +70,7 @@ def get_selection(s):
         # Last line
         lines.append(s.buffer[end[0]][ : end[1]])
     
-        # Copy
+        # Return all lines in the selection
         return lines
 
 # Copy text from buffer or selection
@@ -90,11 +91,19 @@ def copy_text(s):
     
     # Copy selection
     else:
-        # turn into standard text to copy
+        # Turn into standard text to copy
+
         for line in get_selection(s):
             lines.append("".join(line))
+            print(line)
         
-        pyperclip.copy("\n".join(lines))
+        #if len(lines) >= 1:
+        #    pyperclip.copy("\n".join(lines))
+
+        text = "\n".join(lines)
+        print("TEXT:", repr(text))
+        pyperclip.copy(text)
+        print("AFTER COPY:", repr(pyperclip.paste()))
 
 def end_selection(s):
     s.selecting = False

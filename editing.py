@@ -226,6 +226,8 @@ def paste_text(s):
         delete_selection(s)
 
     data = pyperclip.paste().splitlines()
+    starting_cursor_pos = s.cursor_location.copy()
+
     line_num = s.cursor_location[0]
     chars = []
 
@@ -249,11 +251,14 @@ def paste_text(s):
         line_num += 1
     
     # Update cursor position
-    s.cursor_location[0] = line_num - 1
+    if len(data) != 1:
+        s.cursor_location[0] = line_num - 1
+    
     s.cursor_location[1] += len(chars)
 
     s.history.append({"action": "paste_text",
-                      "data": data})
+                      "data": data,
+                      "initial_location": starting_cursor_pos})
 
 # Undo single action
 def undo(s):
@@ -275,7 +280,7 @@ def undo(s):
         del s.buffer[s.cursor_location[0]][s.cursor_location[1] - 1]
 
         s.cursor_location[1] -= 1
-    
+
     # All backspace/delete actions
     elif s.history[history_index]["action"] == "backspace" or s.history[history_index]["action"] == "delete":
         # Adding back a character
@@ -325,6 +330,13 @@ def undo(s):
                 s.cursor_location[0] += 1
                 s.cursor_location[1] = 0
     
+    #elif s.history[history_index]["action"] == "paste":
+    #    
+        # Single line
+        #if len(s.history[history_index]["data"]) == 1:
+        #    # left + right
+        #    s.buffer[s.cursor_location[0]] = s.buffer[s.history[history_index]["initial_location"]] + s.buffer[s.cursor_location[1]]
+
     history_index -= 1
     s.history.pop(history_index)
 
