@@ -43,6 +43,23 @@ def write_buffer(s):
         # Write data
         txt_file.write(data)
 
+# Set camera pos to see cursor
+def fix_camera_pos(s):
+    # If cursor moves -> move camera
+    if (s.cursor_location[0]+2) * c.line_height > c.window_size[1] + r.get_y_offset():
+        r.set_y_offset(((s.cursor_location[0] + 1) * c.line_height + c.padding_top + 3) - (c.window_size[1] - c.line_height))
+    elif s.cursor_location[0] * c.line_height - r.get_y_offset() < 0:
+        r.set_y_offset(c.line_height * s.cursor_location[0])
+ 
+    # Fix horizontal position
+
+    # is this if statement stupid or okay? i really dont know
+    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width - r.get_x_offset() > c.window_size[0]:
+        r.set_x_offset(s.cursor_location[1] * char_width + c.padding_left + c.line_number_width - c.window_size[0])
+    if s.cursor_location[1] * char_width < r.get_x_offset():
+        r.set_x_offset(s.cursor_location[1] * char_width)
+
+# Get all data within a selection
 def get_selection(s):
     lines = []
 
@@ -103,16 +120,24 @@ def copy_text(s):
         
         final = "\n".join(lines)
 
-        # If on linux and single character then use script to fix weird wl-copy behavior
+        # If on linux and single character then use script to fix weird wl-copy/pyperclip behavior
         if os.name == "posix" and len(final) == 1 and has_wl_clipboard:
             subprocess.run(f"/bin/bash -c \"wl-copy {final}\"", shell = True)
         else:
             pyperclip.copy(final)
 
+# Get rid of a selection
 def end_selection(s):
     s.selecting = False
     s.selection_start = (-1, -1)
     s.selection_end = (-1, -1)
+
+# Select all text in the file
+def select_all(s):
+    s.selecting = True
+    s.selection_start = [0,0]
+    s.selection_end = [len(s.buffer) - 1, len(s.buffer[len(s.buffer) - 1])]
+    s.cursor_location = s.selection_end
 
 def selection(s, dir):
     s.selecting = True
@@ -127,13 +152,6 @@ def selection(s, dir):
     elif dir == "up":
         cursor_movement.move_up(s, 1, False)
     s.selection_end = s.cursor_location.copy()
-
-# Select all text in the file
-def select_all(s):
-    s.selecting = True
-    s.selection_start = [0,0]
-    s.selection_end = [len(s.buffer) - 1, len(s.buffer[len(s.buffer) - 1])]
-    s.cursor_location = s.selection_end
 
 # Take in lots of info from main.py and process inputs
 def take_inputs(s, event):
@@ -238,18 +256,3 @@ def take_inputs(s, event):
         s.changed = True
     
     print(s.history)
-
-def fix_camera_pos(s):
-    # If cursor moves -> move camera
-    if (s.cursor_location[0]+2) * c.line_height > c.window_size[1] + r.get_y_offset():
-        r.set_y_offset(((s.cursor_location[0] + 1) * c.line_height + c.padding_top + 3) - (c.window_size[1] - c.line_height))
-    elif s.cursor_location[0] * c.line_height - r.get_y_offset() < 0:
-        r.set_y_offset(c.line_height * s.cursor_location[0])
- 
-    # Fix horizontal position
-
-    # is this if statement stupid or okay? i really dont know
-    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width - r.get_x_offset() > c.window_size[0]:
-        r.set_x_offset(s.cursor_location[1] * char_width + c.padding_left + c.line_number_width - c.window_size[0])
-    if s.cursor_location[1] * char_width < r.get_x_offset():
-        r.set_x_offset(s.cursor_location[1] * char_width)

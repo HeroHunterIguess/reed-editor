@@ -345,6 +345,7 @@ def undo(s):
 
     cursor_movement.make_cursor_pos_valid(s)
 
+
 # Redo single action
 # Will not be implimented in the current version - it may come later
 def redo(s):
