@@ -11,7 +11,7 @@ pygame.display.init()
 pygame.font.init()
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode(c.window_size)
+screen = pygame.display.set_mode(c.window_size, pygame.RESIZABLE)
 pygame.display.set_caption("Reed editor")
 
 # Load char_width into utils
@@ -38,7 +38,8 @@ states = state.editor_states(
     buffer = buffer,
     cursor_location = [0, 0],
     filepath = filepath,
-    history = []
+    history = [],
+    window_size = list(c.window_size)
 )
 
 ##########################
@@ -46,6 +47,9 @@ states = state.editor_states(
 # Begin update/processing loop
 running = True
 while running:
+
+    # Get current window size
+    states.window_size = pygame.display.get_surface().get_size()
 
     # Limit fps
     dt = clock.tick(60)
@@ -62,6 +66,9 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.VIDEORESIZE:
+            states.resizing = True
+            resize_time = pygame.time.get_ticks()
         
         # Clear held key
         if event.type == pygame.KEYUP:
@@ -91,6 +98,7 @@ while running:
             elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 editing.paste_text(states)
 
+            # Make ctrl+a select all text in a file
             elif event.key == pygame.K_a and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 utils.select_all(states)
 
@@ -127,6 +135,9 @@ while running:
 
     # Update screen
     pygame.display.flip()
+
+    if states.resizing and pygame.time.get_ticks() - resize_time > 200:
+        states.resizing = False
 
 # Close
 pygame.quit()

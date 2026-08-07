@@ -67,6 +67,8 @@ import os # This only exists to choose defaults based on OS
 #############################
 
 background_color = (35, 35, 41)
+
+# Default window size upon open
 window_size = (1000, 650)
 
 # If this has a filepath, it will attempt to load an image in that path

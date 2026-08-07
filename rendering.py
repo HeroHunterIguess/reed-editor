@@ -108,28 +108,32 @@ def draw_selection(screen, s):
 # IMAGE
 if c.background_image_location != "":
     image = pygame.image.load(c.background_image_location)
-    imagerect = image.get_rect()
     has_image = True
 else:
     has_image = False
 
 
 # Draw everything in the window
-def draw(screen, s): # s = states (shortened because of already long lines here) 
+def draw(screen, s): 
+
+    if s.resizing:
+        screen.fill(c.background_color)
+        return
 
     # Set background
     screen.fill(c.background_color)
 
     # Draw background image if one is set
     if has_image:
+        imagerect = image.get_rect()
         screen.blit(image, imagerect)
         
     # Find visible lines
     start_index = max(0, (y_offset // c.line_height) - c.buffer_lines)
-    end_index = min(len(s.buffer), ((y_offset + c.window_size[1]) // c.line_height) + c.buffer_lines)
+    end_index = min(len(s.buffer), ((y_offset + s.window_size[1]) // c.line_height) + c.buffer_lines)
 
     # Highlight current line
-    pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top - y_offset, c.window_size[0], c.line_height))
+    pygame.draw.rect(screen, c.current_line_highlight_color, (0, s.cursor_location[0] * c.line_height + c.padding_top - y_offset, s.window_size[0], c.line_height))
 
     # Highlight selected area
     if s.selecting:
@@ -165,7 +169,7 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     # Draw line numbers always with background behind them to cover text
     if c.line_numbers:
         # Background
-        pygame.draw.rect(screen, c.line_number_background_color, (0, 0, c.line_number_width, c.window_size[1] - c.context_info_size))
+        pygame.draw.rect(screen, c.line_number_background_color, (0, 0, c.line_number_width, s.window_size[1] - c.context_info_size))
 
         y = c.padding_top + (start_index * c.line_height)
 
@@ -182,7 +186,7 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     ##########################
 
     # Display context menu background at the bottom
-    pygame.draw.rect(screen, c.context_background_color, (0, c.window_size[1] - c.line_height - c.context_background_padding_bottom, c.window_size[0], c.line_height + c.context_background_padding_bottom))
+    pygame.draw.rect(screen, c.context_background_color, (0, s.window_size[1] - c.line_height - c.context_background_padding_bottom, s.window_size[0], c.line_height + c.context_background_padding_bottom))
 
     # Draw the text for the menu
     truncated_name = s.filepath[ : c.max_filename_length]
@@ -192,9 +196,9 @@ def draw(screen, s): # s = states (shortened because of already long lines here)
     context_text = context_font.render(truncated_name, True, c.context_info_color)
     cursor_location_info = context_font.render("   [ "+str(s.cursor_location[0]+1)+","+str(s.cursor_location[1]+1)+" ]", True, c.context_info_color)
 
-    screen.blit(context_text, (0 + c.context_info_padding, c.window_size[1] - c.line_height - c.context_info_padding))
-    screen.blit(cursor_location_info, (c.window_size[0] - cursor_location_info.get_width() - c.unsaved_alert_size - c.context_info_padding - 12, c.window_size[1] - c.line_height - c.context_info_padding))
+    screen.blit(context_text, (0 + c.context_info_padding, s.window_size[1] - c.line_height - c.context_info_padding))
+    screen.blit(cursor_location_info, (s.window_size[0] - cursor_location_info.get_width() - c.unsaved_alert_size - c.context_info_padding - 12, s.window_size[1] - c.line_height - c.context_info_padding))
 
     # Draw the alert on the context menu if the file has unsaved changes
     if s.changed:
-        pygame.draw.circle(screen, c.unsaved_alert_color, (c.window_size[0] - c.unsaved_alert_corner_padding, c.window_size[1] - c.unsaved_alert_corner_padding), c.unsaved_alert_size)
+        pygame.draw.circle(screen, c.unsaved_alert_color, (s.window_size[0] - c.unsaved_alert_corner_padding, s.window_size[1] - c.unsaved_alert_corner_padding), c.unsaved_alert_size)

@@ -46,16 +46,16 @@ def write_buffer(s):
 # Set camera pos to see cursor
 def fix_camera_pos(s):
     # If cursor moves -> move camera
-    if (s.cursor_location[0]+2) * c.line_height > c.window_size[1] + r.get_y_offset():
-        r.set_y_offset(((s.cursor_location[0] + 1) * c.line_height + c.padding_top + 3) - (c.window_size[1] - c.line_height))
+    if (s.cursor_location[0]+2) * c.line_height > s.window_size[1] + r.get_y_offset():
+        r.set_y_offset(((s.cursor_location[0] + 1) * c.line_height + c.padding_top + 3) - (s.window_size[1] - c.line_height))
     elif s.cursor_location[0] * c.line_height - r.get_y_offset() < 0:
         r.set_y_offset(c.line_height * s.cursor_location[0])
  
     # Fix horizontal position
 
     # is this if statement stupid or okay? i really dont know
-    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width - r.get_x_offset() > c.window_size[0]:
-        r.set_x_offset(s.cursor_location[1] * char_width + c.padding_left + c.line_number_width - c.window_size[0])
+    if (s.cursor_location[1] * char_width) + c.padding_left + c.line_number_width - r.get_x_offset() > s.window_size[0]:
+        r.set_x_offset(s.cursor_location[1] * char_width + c.padding_left + c.line_number_width - s.window_size[0])
     if s.cursor_location[1] * char_width < r.get_x_offset():
         r.set_x_offset(s.cursor_location[1] * char_width)
 

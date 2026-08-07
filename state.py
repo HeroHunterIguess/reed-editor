@@ -10,7 +10,8 @@ class editor_states:
     cursor_location: list
     filepath: str
     history: list
-    #history_pos: int = 0 # Currently unused since ther is no redo action
+    window_size: list
+    # history_pos: int = 0 # Currently unused since ther is no redo action
     last_y: int = 0
     changed: bool = False
     held_event: pygame.event.Event | None = None
@@ -19,3 +20,4 @@ class editor_states:
     selecting: bool = False
     selection_start: tuple = (-1, -1)
     selection_end: tuple = (-1, -1)
+    resizing: bool = False
