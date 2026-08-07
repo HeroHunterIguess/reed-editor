@@ -97,13 +97,7 @@ def copy_text(s):
             lines.append("".join(line))
             print(line)
         
-        #if len(lines) >= 1:
-        #    pyperclip.copy("\n".join(lines))
-
-        text = "\n".join(lines)
-        print("TEXT:", repr(text))
-        pyperclip.copy(text)
-        print("AFTER COPY:", repr(pyperclip.paste()))
+        pyperclip.copy("\n".join(lines))
 
 def end_selection(s):
     s.selecting = False
@@ -123,6 +117,12 @@ def selection(s, dir):
     elif dir == "up":
         cursor_movement.move_up(s, 1, False)
     s.selection_end = s.cursor_location.copy()
+
+def select_all(s):
+    s.selecting = True
+    s.selection_start = [0,0]
+    s.selection_end = [len(s.buffer) - 1, len(s.buffer[len(s.buffer) - 1])]
+    s.cursor_location = s.selection_end
 
 # Take in lots of info from main.py and process inputs
 def take_inputs(s, event):

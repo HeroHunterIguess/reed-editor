@@ -90,7 +90,11 @@ while running:
             # Allow ctrl+v to paste
             elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 editing.paste_text(states)
-            
+
+            elif event.key == pygame.K_a and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                utils.select_all(states)
+
+             
             # All initial inputs/setup before repeat
             else:
                 states.hold_time = 0
