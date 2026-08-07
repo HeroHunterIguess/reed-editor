@@ -330,11 +330,16 @@ def undo(s):
                 s.cursor_location[0] += 1
                 s.cursor_location[1] = 0
     
-    elif s.history[history_index]["action"] == "paste":
+    elif s.history[history_index]["action"] == "paste_text":
+        start = s.history[history_index]["initial_location"]
+        data = s.history[history_index]["data"]
 
         # left + right
-        s.buffer[s.cursor_location[0]] = s.buffer[ : s.history[history_index]["initial_location"]] + s.buffer[s.cursor_location[1] : ]
-
+        if len(data) == 1:
+            del s.buffer[start[0]][start[1] : s.cursor_location[1]]
+            s.cursor_location = start
+        
+    
     history_index -= 1
     s.history.pop(history_index)
 

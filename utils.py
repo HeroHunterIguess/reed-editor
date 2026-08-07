@@ -1,10 +1,14 @@
 ### Util functions ###
 
 
-import pygame, pyperclip, editing, cursor_movement, rendering as r
+import pygame, pyperclip, editing, cursor_movement, os, subprocess, shutil, rendering as r
 from config import c
 
 char_width = 0
+
+# Check if user has wl-clipboard
+if os.name == "posix":
+    has_wl_clipboard = shutil.which("wl-copy") is not None
 
 # Get char_width from the font in main
 def initialize(ch_width):
@@ -97,7 +101,13 @@ def copy_text(s):
             lines.append("".join(line))
             print(line)
         
-        pyperclip.copy("\n".join(lines))
+        final = "\n".join(lines)
+
+        # If on linux and single character then use script to fix weird wl-copy behavior
+        if os.name == "posix" and len(final) == 1 and has_wl_clipboard:
+            subprocess.run(f"/bin/bash -c \"wl-copy {final}\"", shell = True)
+        else:
+            pyperclip.copy(final)
 
 def end_selection(s):
     s.selecting = False
@@ -118,6 +128,7 @@ def selection(s, dir):
         cursor_movement.move_up(s, 1, False)
     s.selection_end = s.cursor_location.copy()
 
+# Select all text in the file
 def select_all(s):
     s.selecting = True
     s.selection_start = [0,0]
