@@ -169,7 +169,7 @@ line_number_color = (121, 120, 125)
 line_number_background_color = (28, 28, 33)
 
 line_number_text_size = 13
-line_number_width = 30
+line_number_width = 38
 
 vertical_number_offset = 1
 
