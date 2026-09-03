@@ -38,4 +38,4 @@ This editor still has many bugs, and issues that need to be fixed in the future.
 - Only monospace fonts work
 - Pressing Ctrl + Down does not go to the end of the line when on the last line of file
 
-If you find more bugs or issues that need to be fixed, you can create a GitHub issue for me to review.
+**If you find more bugs or issues that need to be fixed, you can create a GitHub issue for me to review.**
