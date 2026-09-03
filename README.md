@@ -26,3 +26,16 @@ A more final release will be posted at a later date, right now there are a few p
 - `Ctrl+Del` or `Ctrl+Backspace` deletes whole word sections
 - Fully copy paste function (and `Ctrl+C` with no selection copies all text in file)
 - Auto scrolling & off-screen line culling
+
+This editor still has many bugs, and issues that need to be fixed in the future. Some of this will be fixed far sooner than others. 
+
+## Bugs/Issues
+- Flickering when resizing window
+- When selecting with shift, you cannot hit control to select whole words
+- Certain buttons such as escape add a null character
+- This may be a font issue, however many characters are null
+- Tab is handled badly and tab characters are sometimes null
+- Only monospace fonts work
+- Pressing Ctrl + Down does not go to the end of the line when on the last line of file
+
+If you find more bugs or issues that need to be fixed, you can create a GitHub issue for me to review.
