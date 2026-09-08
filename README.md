@@ -13,6 +13,8 @@ Currently certain changes in the config.py file may cause unintended visual bugs
 
 A more final release will be posted at a later date, right now there are a few pre-releases, but these are early versions that will not completely function as a full seamless editor. 
 
+Right now development is slow and I don't work on this much... however hopefully I will eventually finish release v0.1.0.
+
 ## Features
 
 - Open any text file
