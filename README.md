@@ -2,6 +2,10 @@
 
 ![image](https://github.com/HeroHunterIguess/reed-editor/blob/main/images/showcase.png)
 
+## Status
+
+As of Oct 14, 2026, I haven't worked on this recently - I will probably come back to this project eventually (and I might work on it today), however it is not currently in active development. 
+
 ## General information
 
 Reed is still early in development, but I plan to turn this into a finished (but remaining simple) text editor.
