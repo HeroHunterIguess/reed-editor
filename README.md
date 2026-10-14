@@ -22,25 +22,25 @@ Right now development is slow and I don't work on this much... however hopefully
 ## Features
 
 - Open any text file
+- A fully customizable UI
 - All basic text modifications
-- Displays current column and character
+- Displays current column/character
 - Line counter
 - Full config file within users config directory for full customization
 - Keyboard-centric design
 - Selecting text
 - Unsaved changes indicator
 - `Ctrl+Del` or `Ctrl+Backspace` deletes whole word sections
-- Fully copy paste function (and `Ctrl+C` with no selection copies all text in file)
+- Full copy paste function (and `Ctrl+C` with no selection copies all text in file)
 - Auto scrolling & off-screen line culling
 
-This editor still has many bugs, and issues that need to be fixed in the future. Some of this will be fixed far sooner than others. 
+This editor still has many bugs, missing features, and issues that need to be fixed in the future. Some of these things will be fixed far sooner than others. 
 
 ## Bugs/Issues
 - Flickering when resizing window
 - When selecting with shift, you cannot hit control to select whole words
-- Certain buttons such as escape add a null character
-- This may be a font issue, however many characters are null
-- Tab is handled badly and tab characters are sometimes null
+- This may be a font issue, however many characters are null (such has this happening when pressing escape)
+- Tab is handled badly and tab characters are sometimes null (tab may need a rework)
 - Only monospace fonts work
 - Pressing Ctrl + Down does not go to the end of the line when on the last line of file
 
