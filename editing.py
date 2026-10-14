@@ -4,6 +4,9 @@
 import pyperclip, utils, cursor_movement
 from config import c
 
+# Conditions for ending the deletion when pressing Ctrl + Backspace
+TERMINATE_LONG_BACKSPACE = [" ", ".", "(", ")", '"', "'", ",", "[", "]", "/", "=", "+", "-", "_", "{", "}", "!", "@", "#", "$", "%", "^", "&", "*"]
+
 # Handle hitting enter for a new line
 def new_line(s):
     # Try-except incase the line is empty
@@ -118,7 +121,7 @@ def backspace(s, holding_ctrl):
         # Iterate through looking for word
         if not deleted_spaces:
             for char in reversed(line[ : s.cursor_location[1]]):
-                if char != " " and char != "." and char != "(" and char != ")":
+                if char not in TERMINATE_LONG_BACKSPACE:
                     count += 1
                 else:
                     break
