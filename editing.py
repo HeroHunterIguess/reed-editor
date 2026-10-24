@@ -267,12 +267,35 @@ def paste_text(s):
 def undo(s):
     history_index = len(s.history) - 1
 
+    # Used for undo-ing certain actions (backspace)
+    line_num = s.cursor_location[0]
+    line = s.buffer[line_num]
+
     if history_index < 0:
         return
     
     # If data is empty then no real action was taken so delete it and exit
-    #if s.history[history_index]["action"] != "tab" and s.history[history_index]["action"] != "new_line": # Types with no data
-    if s.history[history_index]["data"] == []:
+    if s.history[history_index]["action"] != "tab" and s.history[history_index]["action"] != "new_line": # Types with no data
+        if s.history[history_index]["data"] == []:
+            s.history.pop(history_index)
+            return
+    
+    # Undo adding a new line
+    if s.history[history_index]["action"] == "new_line":
+
+        previous_line_length = len(s.buffer[line_num - 1])
+        
+        # Move characters to previous line
+        s.buffer[line_num - 1].extend(line)
+
+        # Remove current line
+        s.buffer.pop(line_num)
+        line_num -= 1
+
+        # Fix cursor placement
+        s.cursor_location[0] -= 1
+        s.cursor_location[1] = previous_line_length
+
         s.history.pop(history_index)
         return
     
@@ -337,7 +360,7 @@ def undo(s):
         start = s.history[history_index]["initial_location"]
         data = s.history[history_index]["data"]
 
-        # left + right
+        # Left + right
         if len(data) == 1:
             del s.buffer[start[0]][start[1] : s.cursor_location[1]]
             s.cursor_location = start
